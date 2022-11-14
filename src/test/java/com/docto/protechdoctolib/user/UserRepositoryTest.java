@@ -19,9 +19,9 @@ public class UserRepositoryTest {
     @Test
     public void shouldEnableUser(){
         User user = userRepository.getReferenceById(-9L);
-        userRepository.enableUser("user@gmail.com");
+        userRepository.enableUser("utilisateur@gmail.com");
         User user1=userRepository.getReferenceById(-9L);
-        Assertions.assertThat(user1.isEnabled()).isEqualTo("TRUE");
+        Assertions.assertThat(user1.isEnabled()).isEqualTo(true);
 
     }
 }
