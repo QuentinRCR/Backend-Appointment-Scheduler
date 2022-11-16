@@ -2,17 +2,19 @@ package com.docto.protechdoctolib.user;
 
 import com.docto.protechdoctolib.registration.token.ConfirmationToken;
 import com.docto.protechdoctolib.registration.token.ConfirmationTokenService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-@Service
+@Service @Transactional @Slf4j
 public class UserService implements UserDetailsService {
 
     private final static String USER_NOT_FOUND =
@@ -52,6 +54,7 @@ public class UserService implements UserDetailsService {
 
         user.setPassword(encodedPassword);
 
+        log.info("Registering new user to the database", user.getNom());
         userRepository.save(user);
 
         String token = UUID.randomUUID().toString();
