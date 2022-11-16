@@ -37,12 +37,15 @@ public class WebSecurityConfig {
      */
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        CustomAuthenticationFilter customAuthenticationFilter = new CustomAuthenticationFilter(authenticationManager(authenticationConfiguration));
+        customAuthenticationFilter.setFilterProcessesUrl("api/login");
         http.csrf().disable();
+        http.authorizeRequests().antMatchers("api/login/**").permitAll();
         http.authorizeRequests().antMatchers(GET,"/api/**").hasAnyAuthority("USER");
         http.authorizeRequests().antMatchers(GET,"/api/**").hasAnyAuthority("ADMIN");
         http.authorizeRequests().anyRequest().authenticated().and();
         http.formLogin();
-        http.addFilter(new CustomAuthenticationFilter(authenticationManager(authenticationConfiguration)));
+        http.addFilter(customAuthenticationFilter);
 
         http.authenticationProvider(authenticationProvider());
 
