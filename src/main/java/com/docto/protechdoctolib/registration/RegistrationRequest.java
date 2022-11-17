@@ -7,7 +7,11 @@ public class RegistrationRequest {
     private final String email;
     private final String password;
 
-    private final Double phonenumber;
+    private final String phonenumber;
+
+    private final String skypeAccount;
+
+    private final String campus;
 
     public String getNom() {
         return nom;
@@ -25,14 +29,22 @@ public class RegistrationRequest {
         return password;
     }
 
-    public Double getPhonenumber() { return phonenumber; }
+    public String getPhonenumber() { return phonenumber; }
 
-    public RegistrationRequest(String nom, String prenom, String email, String password, Double phonenumber) {
+    public String getSkypeAccount() { return skypeAccount; }
+
+    public String getCampus() {
+        return campus;
+    }
+
+    public RegistrationRequest(String nom, String prenom, String email, String password, String phonenumber, String skypeAccount, String campus) {
         this.nom = nom;
         this.prenom = prenom;
         this.email = email;
         this.password = password;
         this.phonenumber = phonenumber;
+        this.skypeAccount = skypeAccount;
+        this.campus = campus;
     }
 
 
