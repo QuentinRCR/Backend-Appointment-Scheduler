@@ -40,7 +40,7 @@ public class WebSecurityConfig {
         CustomAuthenticationFilter customAuthenticationFilter = new CustomAuthenticationFilter(authenticationManager(authenticationConfiguration));
         customAuthenticationFilter.setFilterProcessesUrl("api/login");
         http.csrf().disable();
-        http.authorizeRequests().antMatchers("api/login/**").permitAll();
+        http.authorizeRequests().antMatchers("api/login").permitAll();
         http.authorizeRequests().antMatchers(GET,"/api/**").hasAnyAuthority("USER");
         http.authorizeRequests().antMatchers(GET,"/api/**").hasAnyAuthority("ADMIN");
         http.authorizeRequests().anyRequest().authenticated().and();
