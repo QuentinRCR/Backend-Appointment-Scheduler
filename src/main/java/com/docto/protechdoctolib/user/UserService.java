@@ -48,7 +48,7 @@ public class UserService implements UserDetailsService {
      * @return token de confirmation
      */
     public String signUpUser(User user){
-        boolean userExists = userRepository.findByEmail(user.getEmail())
+        boolean userExists = userRepository.findByEmail(user.getUsername())
                 .isPresent();
 
         if (userExists){

@@ -6,7 +6,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import javax.persistence.*;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Objects;
 
 @Entity
 @Table(name="RUser")
@@ -85,6 +84,10 @@ public class User implements UserDetails {
         this.phonenumber = phonenumber;
     }
 
+    public UserRole getUser_role() {
+        return user_role;
+    }
+
     /** Collecte les différents rôles existants et demande l'authentification pour ces rôles
      */
     @Override
@@ -126,7 +129,7 @@ public class User implements UserDetails {
 
     }
 
-    public User( String nom, String prenom, String email, String password, Double phonenumber, UserRole user_role) {
+    public User(String nom, String prenom, String email, String password, Double phonenumber, UserRole user_role) {
         this.nom = nom;
         this.prenom = prenom;
         this.email = email;
