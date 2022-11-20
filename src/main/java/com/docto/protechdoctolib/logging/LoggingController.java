@@ -33,10 +33,6 @@ public class LoggingController {
     public LoggingController(UserService userService) {
         this.userService = userService;
     }
-    @GetMapping("/users")
-    public ResponseEntity<List<User>>getUsers(){
-        return ResponseEntity.ok().body(userService.getUsers());
-    }
 
     @GetMapping("/token/refresh")
     public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
