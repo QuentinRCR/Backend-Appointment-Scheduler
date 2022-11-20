@@ -6,6 +6,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import javax.persistence.*;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Objects;
 
 @Entity
 @Table(name="RUser")
@@ -26,8 +27,14 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private String password;
 
-    @Column(nullable = false)
+    @Column
     private String phonenumber;
+
+    @Column
+    private String skypeAccount;
+
+    @Column
+    private String campus;
 
     @Enumerated(EnumType.STRING)
     private UserRole user_role;
@@ -84,8 +91,24 @@ public class User implements UserDetails {
         this.phonenumber = phonenumber;
     }
 
+    public String getSkypeAccount() {
+        return skypeAccount;
+    }
+
+    public void setSkypeAccount(String skypeAccount) {
+        this.skypeAccount = skypeAccount;
+    }
+
     public UserRole getUser_role() {
         return user_role;
+    }
+
+    public String getCampus() {
+        return campus;
+    }
+
+    public void setCampus(String campus) {
+        this.campus = campus;
     }
 
     /** Collecte les différents rôles existants et demande l'authentification pour ces rôles
@@ -129,7 +152,7 @@ public class User implements UserDetails {
 
     }
 
-    public User(String nom, String prenom, String email, String password, String phonenumber, UserRole user_role) {
+    public User( String nom, String prenom, String email, String password, String phonenumber, UserRole user_role) {
         this.nom = nom;
         this.prenom = prenom;
         this.email = email;
