@@ -33,7 +33,6 @@ public class LoggingController {
     public LoggingController(UserService userService) {
         this.userService = userService;
     }
-    // TODO CHECH VIDEO 31:50 if bug
     @GetMapping("/users")
     public ResponseEntity<List<User>>getUsers(){
         return ResponseEntity.ok().body(userService.getUsers());
@@ -51,7 +50,7 @@ public class LoggingController {
                 String email = decodedJWT.getSubject();
                 User user = (User) userService.loadUserByUsername(email);
                 String access_token = JWT.create()
-                        .withSubject(user.getUsername())     // TODO check that we can't register if email is already taken
+                        .withSubject(user.getUsername())
                         .withExpiresAt(new Date(System.currentTimeMillis() +10 *60 *1000))
                         .withIssuer(request.getRequestURI().toString())
                         .withClaim("roles", user.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()))      //prend le role du user
