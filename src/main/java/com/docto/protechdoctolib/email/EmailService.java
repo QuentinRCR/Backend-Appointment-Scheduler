@@ -37,7 +37,7 @@ public class EmailService {
 
         Authenticator auth = new Authenticator() {
             protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication("protechdocto@gmail.com", "dttzoavnqecwnvjt");
+                return new PasswordAuthentication("noreply.psy.emse@gmail.com", "dttzoavnqecwnvjt");
             }
         };
 
