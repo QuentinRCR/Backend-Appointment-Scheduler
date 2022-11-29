@@ -24,6 +24,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.springframework.http.HttpMethod.GET;
+import static org.springframework.http.HttpMethod.POST;
 
 @Configuration
 @EnableWebSecurity
@@ -52,9 +53,11 @@ public class WebSecurityConfig {
         customAuthenticationFilter.setFilterProcessesUrl("/api/login");
         http.csrf().disable();
 
-        http.authorizeRequests().antMatchers("/api/login/**", "/api/token/refresh/**","/api/registration/**","/api/creneaux/**","/api/rendez_vous/**").permitAll();
-        http.authorizeRequests().antMatchers(GET,"/api/rendez_vous/**").hasAnyAuthority("USER");
-        http.authorizeRequests().antMatchers(GET,"/api/creneaux/**").hasAnyAuthority("ADMIN");
+        http.authorizeRequests().antMatchers("/api/login/**", "/api/token/refresh/**","/api/registration/**").permitAll();
+        http.authorizeRequests().antMatchers(GET,"/api/rendez_vous/**").hasAnyAuthority("USER","ADMIN");
+        http.authorizeRequests().antMatchers(GET,"/api/creneaux/**").hasAnyAuthority("USER","ADMIN");
+        http.authorizeRequests().antMatchers(POST,"/api/creneaux/**").hasAnyAuthority("ADMIN");
+
         http.authorizeRequests().anyRequest().authenticated();
         http.formLogin();
         http.addFilter(customAuthenticationFilter);
@@ -69,7 +72,7 @@ public class WebSecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173"));
         configuration.setAllowedMethods(Arrays.asList("*"));
-        configuration.setAllowedHeaders(List.of("Content-Type")); //"Access-Control-Allow-Headers", "Authorization"
+        configuration.setAllowedHeaders(List.of("Content-Type","AUTHORIZATION")); //"Access-Control-Allow-Headers", "Authorization"
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
