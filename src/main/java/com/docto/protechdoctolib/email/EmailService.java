@@ -1,20 +1,31 @@
 package com.docto.protechdoctolib.email;
 
-import java.util.Properties;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Service;
 
-import javax.mail.Authenticator;
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.PasswordAuthentication;
-import javax.mail.Session;
-import javax.mail.Transport;
+import javax.mail.*;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+import java.util.Properties;
 
 
+@Service
+public class EmailService implements EmailSender{
+    private final static Logger LOGGER = LoggerFactory
+            .getLogger(EmailService.class);
 
-public class EmailService{
-    public static void sendEmail(String to,String subject, String text){
+    private final JavaMailSender mailSender;
+
+    public EmailService(JavaMailSender mailSender) {
+        this.mailSender = mailSender;
+    }
+
+    @Override
+     public void send(String to, String text){
         Properties props;
         Session session;
         MimeMessage message;
@@ -41,21 +52,19 @@ public class EmailService{
             recipients[0] = new InternetAddress(to);
 
             message = new MimeMessage(session);
-            message.setFrom(new InternetAddress("protechdocto@gmail.com"));
+            MimeMessageHelper helper =
+                    new MimeMessageHelper(message, "utf-8");
+            helper.setText(text, true);
+            helper.setFrom(new InternetAddress("protechdocto@gmail.com"));
             message.addRecipients(Message.RecipientType.TO, recipients);
-            message.setSubject(subject);
-            message.setText(text);
 
             Transport.send(message);
 
             System.out.println("Email sent");
         } catch (MessagingException e) {
-            e.printStackTrace();
-            System.out.println("Error");
+            LOGGER.error("failed to send email", e);
+            throw new IllegalStateException("failed to send email");
         }
 
-    }
-    public static void main(String[] args){
-        sendEmail("paul.villeneuve@etu.emse.fr", "Protech","It works !");
     }
 }
