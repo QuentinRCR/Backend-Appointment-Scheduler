@@ -16,6 +16,7 @@ repositories {
 }
 
 dependencies {
+	implementation group: 'com.sun.mail', name: 'javax.mail', version: '1.5.5'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.projectlombok:lombok:1.18.22'
 	annotationProcessor 'org.projectlombok:lombok:1.18.22'
@@ -27,7 +28,7 @@ dependencies {
 	implementation 'com.h2database:h2' // libs to use a H2 database
 	implementation 'io.springfox:springfox-boot-starter:3.0.0'
 	implementation ("org.springframework.boot:spring-boot-starter-mail")
-	//implementation("javax.mail:javax.mail-api")
+	implementation("javax.mail:javax.mail-api")
 	implementation("org.springframework.boot:spring-boot-starter-security")
 	testImplementation("org.springframework.security:spring-security-test")
 
