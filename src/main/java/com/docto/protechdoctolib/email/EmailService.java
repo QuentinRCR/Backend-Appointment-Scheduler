@@ -4,7 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import javax.mail.*;
@@ -12,9 +11,8 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import java.util.Properties;
 
-
 @Service
-public class EmailService implements EmailSender{
+public class EmailService {
     private final static Logger LOGGER = LoggerFactory
             .getLogger(EmailService.class);
 
@@ -24,8 +22,7 @@ public class EmailService implements EmailSender{
         this.mailSender = mailSender;
     }
 
-    @Override
-     public void send(String to, String text){
+     public void sendEmail(String to, String subject, String text){
         Properties props;
         Session session;
         MimeMessage message;
@@ -56,6 +53,7 @@ public class EmailService implements EmailSender{
                     new MimeMessageHelper(message, "utf-8");
             helper.setText(text, true);
             helper.setFrom(new InternetAddress("protechdocto@gmail.com"));
+            helper.setSubject(subject);
             message.addRecipients(Message.RecipientType.TO, recipients);
 
             Transport.send(message);

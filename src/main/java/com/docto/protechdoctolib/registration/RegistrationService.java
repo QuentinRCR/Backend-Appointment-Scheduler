@@ -1,6 +1,5 @@
 package com.docto.protechdoctolib.registration;
 
-import com.docto.protechdoctolib.email.EmailSender;
 import com.docto.protechdoctolib.email.EmailService;
 import com.docto.protechdoctolib.registration.token.ConfirmationToken;
 import com.docto.protechdoctolib.registration.token.ConfirmationTokenService;
@@ -18,14 +17,14 @@ public class RegistrationService {
     private final EmailValidator emailValidator;
     private final UserService userService;
     private final ConfirmationTokenService confirmationTokenService;
-    private final EmailSender emailSender;
+    private final EmailService emailService;
 
 
-    public RegistrationService(EmailValidator emailValidator, UserService userService, ConfirmationTokenService confirmationTokenService,/*, EmailSender emailSender*/EmailService emailSender) {
+    public RegistrationService(EmailValidator emailValidator, UserService userService, ConfirmationTokenService confirmationTokenService,/*, EmailSender emailSender*/EmailService emailSender, EmailService emailService) {
         this.emailValidator = emailValidator;
         this.userService = userService;
         this.confirmationTokenService = confirmationTokenService;
-        this.emailSender = emailSender;
+        this.emailService = emailService;
     }
 
     /** Si l'email est valide selon les contraintes de email validator, la requête est exécutée et l'utilisateur est enregistré.
@@ -47,8 +46,9 @@ public class RegistrationService {
                         UserRole.USER
                 ));
         String link = "http://localhost:8080/api/registration/confirm?token=" + token;
-        emailSender.send(
+        emailService.sendEmail(
                 request.getEmail(),
+                "Lien d'activation de votre compte",
                 buildEmail(request.getNom(), link));
 
         return token;
