@@ -1,21 +1,13 @@
 package com.docto.protechdoctolib.user;
 
-import com.docto.protechdoctolib.creneaux.CreneauxDTO;
-import com.docto.protechdoctolib.rendez_vous.Rendez_vous;
-import com.docto.protechdoctolib.rendez_vous.Rendez_vousDAO;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
-import java.time.Duration;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.stream.Collectors;
@@ -28,8 +20,11 @@ public class UserController {
 
     private final UserRepository userDAO;
 
-    public UserController(UserRepository userDAO) {
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
+
+    public UserController(UserRepository userDAO, BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.userDAO = userDAO;
+        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
     /**
@@ -85,6 +80,7 @@ public class UserController {
                 user.setPhonenumber(dto.getPhoneNumber());
                 user.setSkypeAccount(dto.getSkypeAccount());
                 user.setCampus(dto.getCampus());
+                user.setPassword(bCryptPasswordEncoder.encode(dto.getPassword()));
 
             } catch (EntityNotFoundException e) { //if slot not found, throw 404 error
                 throw new ResponseStatusException(

@@ -11,6 +11,8 @@ public class UserDTO {
 
     private String email;
 
+    private String password;
+
     private String phoneNumber;
 
     private String skypeAccount;
@@ -31,6 +33,7 @@ public class UserDTO {
         this.user_role = user.getUser_role();
         this.skypeAccount = user.getSkypeAccount();
         this.campus = user.getCampus();
+        this.password=user.getPassword();
     }
 
     public Long getId() {
@@ -91,5 +94,9 @@ public class UserDTO {
 
     public UserRole getUser_role() {
         return user_role;
+    }
+
+    public String getPassword() {
+        return password;
     }
 }
