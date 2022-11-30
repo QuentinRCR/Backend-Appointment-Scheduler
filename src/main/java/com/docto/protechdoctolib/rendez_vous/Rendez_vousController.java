@@ -58,10 +58,10 @@ public class Rendez_vousController {
     @GetMapping("/auth")
     public List<Rendez_vousDTO> findAllByAuth(HttpServletRequest request){
         String authorizationHeader = request.getHeader(AUTHORIZATION);
-        String refresh_token = authorizationHeader.substring("Bearer ".length());
+        String acces_token = authorizationHeader.substring("Bearer ".length());
         Algorithm algorithm = Algorithm.HMAC256("secret".getBytes()); //TODO check video around 17min-1:38h should crypt the token
         JWTVerifier verifier = JWT.require(algorithm).build();
-        DecodedJWT decodedJWT = verifier.verify(refresh_token);
+        DecodedJWT decodedJWT = verifier.verify(acces_token);
         String auth = decodedJWT.getClaim("roles").asArray(String.class)[0];
         if (auth.equals("ADMIN")){ //if the right rights, send all the appointements
             return rendez_vousDAO.findAll().stream().map(Rendez_vousDTO::new).collect(Collectors.toList());
@@ -125,13 +125,24 @@ public class Rendez_vousController {
      * @return le dto du rdv crée
      */
     @PostMapping("/create_or_modify") // (8)
-    public Rendez_vousDTO create_or_modify(@RequestBody Rendez_vousDTO dto) {
+    public Rendez_vousDTO create_or_modify(@RequestBody Rendez_vousDTO dto,HttpServletRequest request) {
         CreneauxDTO creneauMatch = isWithinASlot(dto.getDateDebut(),dto.getDuree()); //Get the slot in which the appointment fit.
         if (creneauMatch == null){ //If there is no corresponding slot, throw 404 error
             throw new ResponseStatusException(
                     HttpStatus.NOT_FOUND, "slot not found"
             );
         }
+
+        // Diferent case depending on the role of the personne
+        String acces_token = request.getHeader(AUTHORIZATION).substring("Bearer ".length());
+        Algorithm algorithm = Algorithm.HMAC256("secret".getBytes());
+        JWTVerifier verifier = JWT.require(algorithm).build();
+        DecodedJWT decodedJWT = verifier.verify(acces_token);
+        String auth = decodedJWT.getClaim("roles").asArray(String.class)[0];
+        if (auth.equals("USER")){ //if the person is a user, for the id to be his
+            dto.setIdUser(Long.parseLong(decodedJWT.getKeyId()));
+        }
+        //if it is not the case, it means that the ADMIN try to add an appointment for a user so we keen the id
 
         Long creneauId = creneauMatch.getId(); //If a slot is found, assign the value of the corresponding slot
         Rendez_vous rendez_vous = null;
