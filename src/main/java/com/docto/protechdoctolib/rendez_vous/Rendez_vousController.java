@@ -1,5 +1,9 @@
 package com.docto.protechdoctolib.rendez_vous;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.JWTVerifier;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.docto.protechdoctolib.creneaux.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -9,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 import java.time.DayOfWeek;
 import java.time.Duration;
@@ -16,6 +21,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 @CrossOrigin
 @RestController // (1)
@@ -41,6 +48,28 @@ public class Rendez_vousController {
     @GetMapping
     public List<Rendez_vousDTO> findAll() {
         return rendez_vousDAO.findAll().stream().map(Rendez_vousDTO::new).collect(Collectors.toList());
+    }
+
+    /**
+     * Donne tous les rendez-vous si la personne est admin et donne seulement les rendez-vous de la personne si cette personne n'est pas admin
+     * @param request
+     * @return
+     */
+    @GetMapping("/auth")
+    public List<Rendez_vousDTO> findAllByAuth(HttpServletRequest request){
+        String authorizationHeader = request.getHeader(AUTHORIZATION);
+        String refresh_token = authorizationHeader.substring("Bearer ".length());
+        Algorithm algorithm = Algorithm.HMAC256("secret".getBytes()); //TODO check video around 17min-1:38h should crypt the token
+        JWTVerifier verifier = JWT.require(algorithm).build();
+        DecodedJWT decodedJWT = verifier.verify(refresh_token);
+        String auth = decodedJWT.getClaim("roles").asArray(String.class)[0];
+        if (auth.equals("ADMIN")){ //if the right rights, send all the appointements
+            return rendez_vousDAO.findAll().stream().map(Rendez_vousDTO::new).collect(Collectors.toList());
+        }
+        else{
+            Long id = Long.parseLong(decodedJWT.getKeyId());
+            return rendez_vousDAO.findAllByIdUser(id).stream().map(Rendez_vousDTO::new).collect(Collectors.toList());
+        }
     }
 
     /**

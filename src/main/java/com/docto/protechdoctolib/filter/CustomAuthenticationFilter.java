@@ -51,6 +51,7 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
                 .withExpiresAt(new Date(System.currentTimeMillis() +40 *60 *1000)) //token available 40 minutes
                 .withIssuer(request.getRequestURI().toString())
                 .withClaim("roles", user.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()))      //prend le role du user
+                .withKeyId(user.getId().toString())
                 .sign(algorithm);
 
         String refresh_token = JWT.create()
