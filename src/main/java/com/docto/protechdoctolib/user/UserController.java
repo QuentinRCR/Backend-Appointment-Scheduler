@@ -94,7 +94,7 @@ public class UserController {
             user.setPhonenumber(dto.getPhoneNumber());
             user.setSkypeAccount(dto.getSkypeAccount());
             user.setCampus(dto.getCampus());
-            if(dto.getPassword() != null) { //to avoid accidentally modifying the password;
+            if(!dto.getPassword().equals("null")) { //to avoid accidentally modifying the password;
                 user.setPassword(bCryptPasswordEncoder.encode(dto.getPassword()));
             }
 
