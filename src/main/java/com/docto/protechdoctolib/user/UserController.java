@@ -45,8 +45,7 @@ public class UserController {
     }
 
     /**
-     * Renvoi toutes les infos utiles au front-end
-     * @param id
+     * Renvoi toutes les infos utiles au front-end en récupérant l'id dans le header
      * @return
      */
     @GetMapping(path = "/getbyId")
@@ -58,6 +57,19 @@ public class UserController {
         DecodedJWT decodedJWT = verifier.verify(acces_token);
         Long id= Long.parseLong(decodedJWT.getKeyId());
 
+        UserDTO userDTO = userDAO.findById(id).map(UserDTO::new).orElse(null);
+        if (userDTO == null) {
+            throw new ResponseStatusException( //if not found throw 404 error
+                    HttpStatus.NOT_FOUND, "user not found"
+            );
+        } else {
+            return userDTO;
+        }
+
+    }
+
+    @GetMapping(path = "/submit/{id}")
+    public UserDTO findByIdSubmited(@PathVariable Long id,HttpServletRequest request) {
         UserDTO userDTO = userDAO.findById(id).map(UserDTO::new).orElse(null);
         if (userDTO == null) {
             throw new ResponseStatusException( //if not found throw 404 error

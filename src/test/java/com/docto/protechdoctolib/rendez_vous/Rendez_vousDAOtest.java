@@ -26,7 +26,7 @@ public class Rendez_vousDAOtest {
     public void shouldFindARdv() {
         Rendez_vous rendez_vous = rendez_vousDAO.getReferenceById(-1L); //rendez_vousDAO.getReferenceById(-2L);
         LocalDateTime dateDebut = LocalDateTime.of(2022, 10, 16, 0, 0, 0);
-        Long idUser = Long.valueOf(2);
+        Long idUser = Long.valueOf(-11);
         Long idCreneau = Long.valueOf(-1);
         Duration duree = Duration.ofSeconds(4);
         String moyenComm = String.valueOf("zoom");
@@ -78,9 +78,9 @@ public class Rendez_vousDAOtest {
      */
     @Test
     public void shouldGetRDVForClientId3(){
-        List<Rendez_vous> listRendezVous = rendez_vousDAO.findAllByIdUser(3L);
+        List<Rendez_vous> listRendezVous = rendez_vousDAO.findAllByIdUser(-10L);
         Assertions.assertThat(listRendezVous.size()).isEqualTo(2);
-        Assertions.assertThat(listRendezVous.get(0).getIdUser()).isEqualTo(3L);
+        Assertions.assertThat(listRendezVous.get(0).getIdUser()).isEqualTo(-10L);
     }
 
     @Test

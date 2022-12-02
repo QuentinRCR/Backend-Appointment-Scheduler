@@ -57,6 +57,7 @@ public class WebSecurityConfig {
         http.authorizeRequests().antMatchers(GET,"/api/rendez_vous/**").hasAnyAuthority("USER","ADMIN");
         http.authorizeRequests().antMatchers(GET,"/api/creneaux/**").hasAnyAuthority("USER","ADMIN");
         http.authorizeRequests().antMatchers(POST,"/api/creneaux/**").hasAnyAuthority("ADMIN");
+        http.authorizeRequests().antMatchers(POST,"/api/users").hasAnyAuthority("ADMIN");
 
         http.authorizeRequests().anyRequest().authenticated();
         http.formLogin();
