@@ -27,16 +27,18 @@ public class RegistrationService {
         this.emailService = emailService;
     }
 
-    /** Si l'email est valide selon les contraintes de email validator, la requête est exécutée et l'utilisateur est enregistré.
+    /**
+     * Si l'email est valide selon les contraintes de email validator, la requête est exécutée et l'utilisateur est enregistré.
+     *
      * @param request
      * @return token de confirmation qui est généré.
      */
     public String register(RegistrationRequest request) {
         boolean isValidEmail = emailValidator.test(request.getEmail());
-        if (!isValidEmail){
+        if (!isValidEmail) {
             throw new IllegalStateException("email not valid");
         }
-         String token = userService.signUpUser(
+        String token = userService.signUpUser(
                 new User(
                         request.getNom(),
                         request.getPrenom(),
@@ -54,26 +56,28 @@ public class RegistrationService {
         return token;
     }
 
-    /** Si le token existe, que l'email n'est pas déjà confirmé et que le token n'a pas expiré,
+    /**
+     * Si le token existe, que l'email n'est pas déjà confirmé et que le token n'a pas expiré,
      * le compte de l'utilisateur qui a généré ce token est activé
+     *
      * @param token
      * @return
      */
     @Transactional
-    public String confirmToken(String token){
+    public String confirmToken(String token) {
         ConfirmationToken confirmationToken = confirmationTokenService
                 .getToken(token)
                 .orElseThrow(() ->
                         new IllegalStateException("token not found"));
 
-        if (confirmationToken.getConfirmedAt() != null){
+        if (confirmationToken.getConfirmedAt() != null) {
             throw new IllegalStateException("email already confirmed");
 
         }
 
         LocalDateTime expiredAt = confirmationToken.getExpiresAt();
 
-        if (expiredAt.isBefore(LocalDateTime.now())){
+        if (expiredAt.isBefore(LocalDateTime.now())) {
             throw new IllegalStateException("token expired");
         }
 
@@ -81,6 +85,7 @@ public class RegistrationService {
         userService.enableAppUser(confirmationToken.getUser().getUsername());
         return "confirmed";
     }
+
     private String buildEmail(String name, String link) {
         return "<div style=\"font-family:Helvetica,Arial,sans-serif;font-size:16px;margin:0;color:#0b0c0c\">\n" +
                 "\n" +
