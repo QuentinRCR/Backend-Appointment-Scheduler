@@ -25,7 +25,7 @@ public class RestAPIIntegrationTest {
      * @throws ClientProtocolException
      * @throws IOException
      */
-    @Test
+    /*@Test
     public void givenSlotDoesNotExists_whenSlotIsRetrieved_then404IsReceived()
             throws ClientProtocolException, IOException {
 
@@ -37,14 +37,14 @@ public class RestAPIIntegrationTest {
         // Then
         Assertions.assertThat(httpResponse.getStatusLine().getStatusCode()).isEqualTo(HttpStatus.SC_NOT_FOUND); //test that the status code is correct
 
-    }
+    }*/
 
     /**
      * Test que la réponse du body est bien un json
      * @throws ClientProtocolException
      * @throws IOException
      */
-    @Test
+    /*@Test
     public void
     givenRequestWithNoAcceptHeader_whenRequestIsExecuted_thenDefaultResponseContentTypeIsJson()
             throws ClientProtocolException, IOException {
@@ -59,14 +59,14 @@ public class RestAPIIntegrationTest {
         // Then
         String mimeType = ContentType.getOrDefault(response.getEntity()).getMimeType(); //test that the returned document is a JSON
         Assertions.assertThat( jsonMimeType).isEqualTo(mimeType );
-    }
+    }*/
 
     /**
      * Test que le json envoyé est le bon
      * @throws ClientProtocolException
      * @throws IOException
      */
-    @Test
+    /*@Test
     public void
     givenSlotExists_whenSlotInformationIsRetrieved_thenRetrievedResourceIsCorrect()
             throws ClientProtocolException, IOException {
@@ -79,5 +79,5 @@ public class RestAPIIntegrationTest {
         ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         CreneauDeserialisation a= mapper.readValue(jsonFromResponse, CreneauDeserialisation.class); //map the response to the class CreneauDeserialisation
         Assertions.assertThat(a.getId()).isEqualTo(-1); //test that the id is equal to -1
-    }
+    }*/
 }
