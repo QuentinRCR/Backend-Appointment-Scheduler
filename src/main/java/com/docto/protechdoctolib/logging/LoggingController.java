@@ -45,9 +45,15 @@ public class LoggingController {
                 User user = (User) userService.loadUserByUsername(email);
                 String access_token = JWT.create()
                         .withSubject(user.getUsername())
-                        .withExpiresAt(new Date(System.currentTimeMillis() +10 *60 *1000))
+                        .withExpiresAt(new Date(System.currentTimeMillis() +2 * 60 *1000))
                         .withIssuer(request.getRequestURI().toString())
                         .withClaim("roles", user.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()))      //prend le role du user
+                        .sign(algorithm);
+
+                refresh_token = JWT.create()
+                        .withSubject(user.getUsername())
+                        .withExpiresAt(new Date(System.currentTimeMillis() + 140 *1000))
+                        .withIssuer(request.getRequestURI().toString())
                         .sign(algorithm);
 
                 Map<String, String> tokens = new HashMap<>();

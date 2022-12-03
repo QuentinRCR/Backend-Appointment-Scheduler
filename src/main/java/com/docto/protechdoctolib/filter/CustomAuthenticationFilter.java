@@ -46,17 +46,17 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) throws IOException, ServletException {
         User user = (User)authentication.getPrincipal();
         Algorithm algorithm = Algorithm.HMAC256("secret".getBytes()); //TODO check video around 17 min should crypt the token
-        String access_token = JWT.create()
+        String access_token = JWT.create() //pour recréer un access token valable plus longtemps
                 .withSubject(user.getUsername())
-                .withExpiresAt(new Date(System.currentTimeMillis() +40 *60 *1000)) //token available 40 minutes
+                .withExpiresAt(new Date(System.currentTimeMillis() +2 * 60 *1000)) //token available 2 minutes
                 .withIssuer(request.getRequestURI().toString())
                 .withClaim("roles", user.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()))      //prend le role du user
                 .withKeyId(user.getId().toString())
                 .sign(algorithm);
 
-        String refresh_token = JWT.create()
+        String refresh_token = JWT.create() //pour recréer un refresh token valable plus longtemps
                 .withSubject(user.getUsername())
-                .withExpiresAt(new Date(System.currentTimeMillis() +50 *60 *1000))
+                .withExpiresAt(new Date(System.currentTimeMillis() +140 *1000))
                 .withIssuer(request.getRequestURI().toString())
                 .sign(algorithm);
         /*response.setHeader("access_token", access_token);         // envoie au frontend
