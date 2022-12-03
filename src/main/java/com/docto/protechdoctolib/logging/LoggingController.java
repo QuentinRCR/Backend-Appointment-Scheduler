@@ -48,6 +48,7 @@ public class LoggingController {
                         .withExpiresAt(new Date(System.currentTimeMillis() +2 * 60 *1000))
                         .withIssuer(request.getRequestURI().toString())
                         .withClaim("roles", user.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()))      //prend le role du user
+                        .withKeyId(user.getId().toString())
                         .sign(algorithm);
 
                 refresh_token = JWT.create()
