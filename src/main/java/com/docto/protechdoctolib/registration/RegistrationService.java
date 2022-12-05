@@ -43,7 +43,9 @@ public class RegistrationService {
                         request.getEmail(),
                         request.getPassword(),
                         request.getPhonenumber(),
-                        UserRole.USER
+                        UserRole.USER,
+                        request.getSkypeAccount(),
+                        request.getCampus()
                 ));
         String link = "http://localhost:8080/api/registration/confirm?token=" + token;
         emailService.sendEmail(
@@ -79,7 +81,25 @@ public class RegistrationService {
 
         confirmationTokenService.setConfirmedAt(token);
         userService.enableAppUser(confirmationToken.getUser().getUsername());
-        return "confirmed";
+        return "<!DOCTYPE html>\n" +
+                "<html lang=\"en\">\n" +
+                "<head>\n" +
+                "    <title>Compte activé</title>\n" +
+                "</head>\n" +
+                "<style>\n" +
+                "    p{\n" +
+                "        align-items: center;\n" +
+                "        padding: 15px 15px 15px 15px;\n" +
+                "        background-color: rgba(0, 128, 0, 0.392);\n" +
+                "        font-size: 18px;\n" +
+                "        font-weight: bold;\n" +
+                "        text-align: center;\n" +
+                "    }\n" +
+                "</style>\n" +
+                "<body>\n" +
+                "    <p>Votre compte a bien été activé. Vous pouvez maintenant vous connecter en utilisant cet email.</p>\n" +
+                "</body>\n" +
+                "</html>";
     }
     private String buildEmail(String name, String link) {
         return "<div style=\"font-family:Helvetica,Arial,sans-serif;font-size:16px;margin:0;color:#0b0c0c\">\n" +
