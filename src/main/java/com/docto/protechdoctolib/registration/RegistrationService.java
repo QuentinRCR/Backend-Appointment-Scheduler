@@ -170,7 +170,7 @@ public class RegistrationService {
                 "</div></div>";
     }
 
-    private String buildEmailConfirmationRdv(String name, String link, LocalDateTime date, String comm) {
+    public String buildEmailConfirmationRdv(String name, String link, LocalDateTime date, String comm) {
         return "<!doctype html>\n" +
                 "<html>\n" +
                 "  <head>\n" +
@@ -348,17 +348,17 @@ public class RegistrationService {
                 "                  <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\">\n" +
                 "                    <tr>\n" +
                 "                      <td>\n" +
-                "                        <h1>"+ name +", votre rendez-vous est fixé!</h1>\n" +
+                "                        <h1>" + name + ", votre rendez-vous est fixé!</h1>\n" +
                 "                        <h2>Bonjour, votre demande a bien été traitée. Voici les détails concernant votre rendez-vous:</h2>\n" +
                 "                        <div class=\"card_container\">\n" +
                 "                          <div class=\"left_panel\"></div>\n" +
                 "                          <div class=\"détails\">\n" +
-                "                            <div class=\"détails_élément\">Date:"+date.getDayOfMonth()/date.getMonthValue()+"</div>\n" +
-                "                            <div class=\"détails_élément\">Heure:"+date.toLocalTime()+"</div>\n" +
-                "                            <div class=\"détails_élément\">Moyen de communication:"+comm+"</div>\n" +
+                "                            <div class=\"détails_élément\">Date:" + date.getDayOfMonth() / date.getMonthValue() + "</div>\n" +
+                "                            <div class=\"détails_élément\">Heure:" + date.toLocalTime() + "</div>\n" +
+                "                            <div class=\"détails_élément\">Moyen de communication:" + comm + "</div>\n" +
                 "                          </div>\n" +
                 "                        </div>\n" +
-                "                        <h2>Vous êtes donc attendu le "+date.getDayOfMonth()/date.getMonthValue()+" à "+date.toLocalTime()+" sur "+comm+"</h2>\n" +
+                "                        <h2>Vous êtes donc attendu le " + date.getDayOfMonth() / date.getMonthValue() + " à " + date.toLocalTime() + " sur " + comm + "</h2>\n" +
                 "                        <h2>Pour accéder au site de réservation, cliquez sur le lien ci-dessous:</h2>\n" +
                 "                        <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"btn btn-primary\">\n" +
                 "                          <tbody>\n" +
@@ -367,7 +367,7 @@ public class RegistrationService {
                 "                                <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\">\n" +
                 "                                  <tbody>\n" +
                 "                                    <tr>\n" +
-                "                                      <td> <a href=\""+link+"\" target=\"_blank\">Accès au site</a> </td>\n" +
+                "                                      <td> <a href=\"" + link + "\" target=\"_blank\">Accès au site</a> </td>\n" +
                 "                                    </tr>\n" +
                 "                                  </tbody>\n" +
                 "                                </table>\n" +
