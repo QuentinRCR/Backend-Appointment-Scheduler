@@ -152,12 +152,14 @@ public class User implements UserDetails {
 
     }
 
-    public User( String nom, String prenom, String email, String password, String phonenumber, UserRole user_role) {
+    public User( String nom, String prenom, String email, String password, String phonenumber, UserRole user_role, String skypeAccount, String campus) {
         this.nom = nom;
         this.prenom = prenom;
         this.email = email;
         this.password = password;
         this.phonenumber = phonenumber;
         this.user_role = user_role;
+        this.campus = campus;
+        this.skypeAccount = skypeAccount;
     }
 }
