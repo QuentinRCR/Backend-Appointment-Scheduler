@@ -4,6 +4,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
@@ -66,6 +67,16 @@ public class UserController {
             return userDTO;
         }
 
+    }
+
+    @DeleteMapping()
+    public void deleteParId(HttpServletRequest request) {
+        String acces_token = request.getHeader(AUTHORIZATION).substring("Bearer ".length());
+        Algorithm algorithm = Algorithm.HMAC256("secret".getBytes());
+        JWTVerifier verifier = JWT.require(algorithm).build();
+        DecodedJWT decodedJWT = verifier.verify(acces_token);
+        Long id= Long.parseLong(decodedJWT.getKeyId());
+        userDAO.deleteById(id);
     }
 
     @GetMapping(path = "/submit/{id}")
