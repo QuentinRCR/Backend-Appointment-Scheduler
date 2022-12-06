@@ -4,6 +4,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.docto.protechdoctolib.rendez_vous.Rendez_vousDTO;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -67,6 +68,25 @@ public class UserController {
             return userDTO;
         }
 
+    }
+
+    /**
+     * Renvoi le user ayant pour id le paramètre
+     *
+     * @param id
+     * @return user
+     */
+    @GetMapping(path = "/{id}")
+    public UserDTO findById(@PathVariable Long id) {
+        UserDTO userId= userDAO.findById(id).map(UserDTO::new).orElse(null);
+        if (userId==null){
+            throw new ResponseStatusException( //If not found, throw 404 error
+                    HttpStatus.NOT_FOUND, "entity not found"
+            );
+        }
+        else{
+            return userId;
+        }
     }
 
     @DeleteMapping()
