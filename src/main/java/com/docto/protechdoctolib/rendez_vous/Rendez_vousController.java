@@ -17,10 +17,12 @@ import org.springframework.web.server.ResponseStatusException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
+import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
@@ -160,7 +162,7 @@ public class Rendez_vousController {
             emailService.sendEmail(
                     user.getEmail(),
                     "confirmation prise de rendez-vous",
-                    buildEmailConfirmationRdv("name", "link", dto.getDateDebut(),dto.getMoyenCommunication()));
+                    buildEmailConfirmationRdv(user.getPrenom(), "link", dto.getDateDebut(),dto.getMoyenCommunication()));
 
 
         } else {
@@ -227,6 +229,7 @@ public class Rendez_vousController {
     }
 
     public String buildEmailConfirmationRdv(String name, String link, LocalDateTime date, String comm) {
+        //SimpleDateFormat dateFormat = new SimpleDateFormat("EEEEEEEE dd MMMMMMMMM yyyy", Locale.FRANCE);
         return "<!doctype html>\n" +
                 "<html>\n" +
                 "  <head>\n" +
@@ -409,8 +412,8 @@ public class Rendez_vousController {
                 "                        <div class=\"card_container\">\n" +
                 "                          <div class=\"left_panel\"></div>\n" +
                 "                          <div class=\"détails\">\n" +
-                "                            <div class=\"détails_élément\">Date:"+date.getDayOfMonth()/date.getMonthValue()+"</div>\n" +
-                "                            <div class=\"détails_élément\">Heure:"+date.toLocalTime()+"</div>\n" +
+                "                            <div class=\"détails_élément\">Date: "+date.toLocalDate()+"</div>\n" +
+                "                            <div class=\"détails_élément\">Heure: "+date.toLocalTime()+"</div>\n" +
                 "                            <div class=\"détails_élément\">Moyen de communication:"+comm+"</div>\n" +
                 "                          </div>\n" +
                 "                        </div>\n" +
@@ -447,7 +450,7 @@ public class Rendez_vousController {
                 "              <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\">\n" +
                 "                <tr>\n" +
                 "                  <td class=\"content-block\">\n" +
-                "                    <span class=\"apple-link\">Cécile Fraisse | psychologue de l'école des Mines de Saint-Etienne</span>\n" +
+                "                    <span class=\"apple-link\">Cécile Fraisse | Psychologue à l'école des Mines de Saint-Etienne</span>\n" +
                 "                  </td>\n" +
                 "                </tr>\n" +
                 "                \n" +
