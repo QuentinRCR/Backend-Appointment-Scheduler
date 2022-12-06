@@ -10,7 +10,6 @@ import com.docto.protechdoctolib.user.User;
 import com.docto.protechdoctolib.user.UserRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +17,6 @@ import org.springframework.web.server.ResponseStatusException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
-import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -36,14 +34,16 @@ public class Rendez_vousController {
     private final CreneauxDAO creneauxDAO;
     private final Rendez_vousDAO rendez_vousDAO;
 
-    private final UserRepository userDAO;
-
     private final EmailService emailService;
+
+    private final UserRepository userRepository;
     private static final Logger logger = LogManager.getLogger(CreneauxController.class);
 
-    public Rendez_vousController(CreneauxDAO creneauxDAO, Rendez_vousDAO rendez_vousDAO) {
+    public Rendez_vousController(CreneauxDAO creneauxDAO, Rendez_vousDAO rendez_vousDAO, EmailService emailService, UserRepository userRepository) {
         this.creneauxDAO = creneauxDAO;
         this.rendez_vousDAO = rendez_vousDAO;
+        this.emailService = emailService;
+        this.userRepository = userRepository;
     }
 
     /**
@@ -156,12 +156,12 @@ public class Rendez_vousController {
         if (dto.getId() == null) {
             rendez_vous = rendez_vousDAO.save(new Rendez_vous(dto.getId(), creneauId ,dto.getIdUser(), dto.getDateDebut(), dto.getDuree(), dto.getMoyenCommunication(),dto.getZoomLink())); //Create new appointment
             //envoi mail de confirmation prise de rdv
-            /*User user= userDAO.findById(dto.getIdUser());
+            User user= userRepository.findById(dto.getIdUser()).get();
             emailService.sendEmail(
-                    request.getEmail(),
+                    user.getEmail(),
                     "confirmation prise de rendez-vous",
                     buildEmailConfirmationRdv("name", "link", dto.getDateDebut(),dto.getMoyenCommunication()));
-*/
+
 
         } else {
             rendez_vous = rendez_vousDAO.getReferenceById(dto.getId());  //Modify existing appointment
