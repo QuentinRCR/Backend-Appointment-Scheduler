@@ -70,24 +70,7 @@ public class UserController {
 
     }
 
-    /**
-     * Renvoi le user ayant pour id le paramètre
-     *
-     * @param id
-     * @return user
-     */
-    @GetMapping(path = "/{id}")
-    public UserDTO findById(@PathVariable Long id) {
-        UserDTO userId= userDAO.findById(id).map(UserDTO::new).orElse(null);
-        if (userId==null){
-            throw new ResponseStatusException( //If not found, throw 404 error
-                    HttpStatus.NOT_FOUND, "entity not found"
-            );
-        }
-        else{
-            return userId;
-        }
-    }
+
 
     @DeleteMapping()
     public void deleteParId(HttpServletRequest request) {
