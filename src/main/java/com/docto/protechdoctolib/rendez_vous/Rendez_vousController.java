@@ -6,6 +6,8 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.docto.protechdoctolib.creneaux.*;
 import com.docto.protechdoctolib.email.EmailService;
+import com.docto.protechdoctolib.user.User;
+import com.docto.protechdoctolib.user.UserRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +35,8 @@ public class Rendez_vousController {
 
     private final CreneauxDAO creneauxDAO;
     private final Rendez_vousDAO rendez_vousDAO;
+
+    private final UserRepository userDAO;
 
     private final EmailService emailService;
     private static final Logger logger = LogManager.getLogger(CreneauxController.class);
@@ -152,11 +156,12 @@ public class Rendez_vousController {
         if (dto.getId() == null) {
             rendez_vous = rendez_vousDAO.save(new Rendez_vous(dto.getId(), creneauId ,dto.getIdUser(), dto.getDateDebut(), dto.getDuree(), dto.getMoyenCommunication(),dto.getZoomLink())); //Create new appointment
             //envoi mail de confirmation prise de rdv
+            /*User user= userDAO.findById(dto.getIdUser());
             emailService.sendEmail(
                     request.getEmail(),
                     "confirmation prise de rendez-vous",
                     buildEmailConfirmationRdv("name", "link", dto.getDateDebut(),dto.getMoyenCommunication()));
-
+*/
 
         } else {
             rendez_vous = rendez_vousDAO.getReferenceById(dto.getId());  //Modify existing appointment
