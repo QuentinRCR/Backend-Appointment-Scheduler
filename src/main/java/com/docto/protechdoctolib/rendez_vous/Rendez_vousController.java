@@ -124,6 +124,7 @@ public class Rendez_vousController {
                     HttpStatus.NOT_FOUND, "entity not found"
             );
         }
+
     }
 
     /**
@@ -173,7 +174,7 @@ public class Rendez_vousController {
             rendez_vous.setDuree(dto.getDuree()); /*use a duration using format "PT60S" or "PT2M"...*/
             rendez_vous.setMoyenCommunication(dto.getMoyenCommunication());
             rendez_vous.setZoomLink(dto.getZoomLink());
-            //envoi mail de confirmation prise de rdv
+            //envoi mail de modification de rdv
             User user= userRepository.findById(dto.getIdUser()).get();
             emailService.sendEmail(
                     user.getEmail(),
@@ -235,6 +236,7 @@ public class Rendez_vousController {
         return bonCreneau;
     }
 
+    /*Crée le mail qu'on envoie lors de la prise d'un rdv, mail adapté à l'user et au rdv en question*/
     public String buildEmailConfirmationRdv(String name, String link, LocalDateTime date, String comm) {
         //SimpleDateFormat dateFormat = new SimpleDateFormat("EEEEEEEE dd MMMMMMMMM yyyy", Locale.FRANCE);
         return "<!doctype html>\n" +
@@ -475,6 +477,7 @@ public class Rendez_vousController {
                 "</html>";
     }
 
+    /*Crée le mail qu'on envoie lors de la modification d'un rdv existant, mail adapté à l'user et au rdv en question*/
     public String buildEmailModificationRdv(String name, String link, LocalDateTime date, String comm) {
         //SimpleDateFormat dateFormat = new SimpleDateFormat("EEEEEEEE dd MMMMMMMMM yyyy", Locale.FRANCE);
         return "<!doctype html>\n" +
@@ -715,6 +718,7 @@ public class Rendez_vousController {
                 "</html>";
     }
 
+    /*Crée le mail qu'on envoie lors de l'annulation d'un rdv existant, mail adapté à l'user et au rdv en question*/
     public String buildEmailAnnulationRdv(String name, String link, LocalDateTime date, String comm) {
         //SimpleDateFormat dateFormat = new SimpleDateFormat("EEEEEEEE dd MMMMMMMMM yyyy", Locale.FRANCE);
         return "<!doctype html>\n" +
