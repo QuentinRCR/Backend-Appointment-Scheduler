@@ -162,7 +162,7 @@ public class Rendez_vousController {
             User user= userRepository.findById(dto.getIdUser()).get();
             emailService.sendEmail(
                     user.getEmail(),
-                    "confirmation prise de rendez-vous",
+                    "Confirmation prise de rendez-vous",
                     buildEmailConfirmationRdv(user.getPrenom(), "link", dto.getDateDebut(),dto.getMoyenCommunication()));
 
 
