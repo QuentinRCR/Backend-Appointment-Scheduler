@@ -173,6 +173,13 @@ public class Rendez_vousController {
             rendez_vous.setDuree(dto.getDuree()); /*use a duration using format "PT60S" or "PT2M"...*/
             rendez_vous.setMoyenCommunication(dto.getMoyenCommunication());
             rendez_vous.setZoomLink(dto.getZoomLink());
+            //envoi mail de confirmation prise de rdv
+            User user= userRepository.findById(dto.getIdUser()).get();
+            emailService.sendEmail(
+                    user.getEmail(),
+                    "Modification de rendez-vous",
+                    buildEmailModificationRdv(user.getPrenom(), "link", dto.getDateDebut(),dto.getMoyenCommunication()));
+
 
 
         }
@@ -418,6 +425,246 @@ public class Rendez_vousController {
                 "                          </div>\n" +
                 "                        </div>\n" +
                 "                        <h2>Vous êtes donc attendu le "+date.getDayOfMonth()/date.getMonthValue()+" à "+date.toLocalTime()+" sur "+comm+"</h2>\n" +
+                "                        <h2>Pour accéder au site de réservation, cliquez sur le lien ci-dessous:</h2>\n" +
+                "                        <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"btn btn-primary\">\n" +
+                "                          <tbody>\n" +
+                "                            <tr>\n" +
+                "                              <td align=\"left\">\n" +
+                "                                <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\">\n" +
+                "                                  <tbody>\n" +
+                "                                    <tr>\n" +
+                "                                      <td> <a href=\""+link+"\" target=\"_blank\">Accès au site</a> </td>\n" +
+                "                                    </tr>\n" +
+                "                                  </tbody>\n" +
+                "                                </table>\n" +
+                "                              </td>\n" +
+                "                            </tr>\n" +
+                "                          </tbody>\n" +
+                "                        </table>\n" +
+                "                        <p>Si vous avez reçu ce mail par erreur, effacez le.</p>\n" +
+                "      \n" +
+                "                      </td>\n" +
+                "                    </tr>\n" +
+                "                  </table>\n" +
+                "                </td>\n" +
+                "              </tr>\n" +
+                "\n" +
+                "            <!-- END MAIN CONTENT AREA -->\n" +
+                "            </table>\n" +
+                "\n" +
+                "            <!-- START FOOTER -->\n" +
+                "            <div class=\"footer\">\n" +
+                "              <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\">\n" +
+                "                <tr>\n" +
+                "                  <td class=\"content-block\">\n" +
+                "                    <span class=\"apple-link\">Cécile Fraisse | Psychologue à l'école des Mines de Saint-Etienne</span>\n" +
+                "                  </td>\n" +
+                "                </tr>\n" +
+                "                \n" +
+                "              </table>\n" +
+                "            </div>\n" +
+                "            <!-- END FOOTER -->\n" +
+                "            \n" +
+                "          <!-- END CENTERED WHITE CONTAINER -->\n" +
+                "          </div>\n" +
+                "        </td>\n" +
+                "        <td>&nbsp;</td>\n" +
+                "      </tr>\n" +
+                "    </table>\n" +
+                "  </body>\n" +
+                "</html>";
+    }
+
+    public String buildEmailModificationRdv(String name, String link, LocalDateTime date, String comm) {
+        //SimpleDateFormat dateFormat = new SimpleDateFormat("EEEEEEEE dd MMMMMMMMM yyyy", Locale.FRANCE);
+        return "<!doctype html>\n" +
+                "<html>\n" +
+                "  <head>\n" +
+                "    <meta name=\"viewport\" content=\"width=device-width\" />\n" +
+                "    <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />\n" +
+                "    <title>Simple Transactional Email</title>\n" +
+                "    <style>\n" +
+                "      \n" +
+                "     \n" +
+                "      body {\n" +
+                "        background-color: #f6f6f6;\n" +
+                "        font-family: sans-serif;\n" +
+                "        -webkit-font-smoothing: antialiased;\n" +
+                "        font-size: 14px;\n" +
+                "        line-height: 1.4;\n" +
+                "        margin: 0;\n" +
+                "        padding: 0; \n" +
+                "        -ms-text-size-adjust: 100%;\n" +
+                "        -webkit-text-size-adjust: 100%; }\n" +
+                "      table {\n" +
+                "        margin: auto;\n" +
+                "        border-collapse: separate;\n" +
+                "        \n" +
+                "        width: 100%; }\n" +
+                "        table td {\n" +
+                "          font-family: sans-serif;\n" +
+                "          font-size: 14px;\n" +
+                "          vertical-align: top;}\n" +
+                "      \n" +
+                "      .body {\n" +
+                "        background-color: #f6f6f6;\n" +
+                "        width: 100%; }\n" +
+                "      /* Set a max-width, and make it display as block so it will automatically stretch to that width, but will also shrink down on a phone or something */\n" +
+                "      \n" +
+                "      .content {\n" +
+                "        box-sizing: border-box;\n" +
+                "        display: block;\n" +
+                "        Margin: 0 auto;\n" +
+                "        max-width: 580px;\n" +
+                "        padding: 10px; }\n" +
+                "      \n" +
+                "      .main {\n" +
+                "        background: #fff;\n" +
+                "        border-radius: 3px;\n" +
+                "        width: 100%; }\n" +
+                "      .wrapper {\n" +
+                "        box-sizing: border-box;\n" +
+                "        padding: 20px; }\n" +
+                "      .footer {\n" +
+                "        clear: both;\n" +
+                "        padding-top: 10px;\n" +
+                "        text-align: center;\n" +
+                "        width: 100%; }\n" +
+                "        .footer td,\n" +
+                "        .footer p,\n" +
+                "        .footer span,\n" +
+                "        .footer a {\n" +
+                "          color: #999999;\n" +
+                "          font-size: 12px;\n" +
+                "          text-align: center; }\n" +
+                "      /* -------------------------------------\n" +
+                "          TYPOGRAPHY\n" +
+                "      ------------------------------------- */\n" +
+                "      h1,\n" +
+                "      h2,\n" +
+                "      h3,\n" +
+                "      h4 {\n" +
+                "        color: #000000;\n" +
+                "        font-family: sans-serif;\n" +
+                "        font-weight: 400;\n" +
+                "        line-height: 1.4;\n" +
+                "        margin: 0;\n" +
+                "        Margin-bottom: 20px; }\n" +
+                "      h1 {\n" +
+                "        font-size: 35px;\n" +
+                "        font-weight: 300;\n" +
+                "        text-align: center;\n" +
+                "         }\n" +
+                "      p,\n" +
+                "      ul,\n" +
+                "      ol {\n" +
+                "        font-family: sans-serif;\n" +
+                "        font-size: 14px;\n" +
+                "        font-weight: normal;\n" +
+                "        margin: 0;\n" +
+                "        Margin-bottom: 15px; }\n" +
+                "        p li,\n" +
+                "        ul li,\n" +
+                "        ol li {\n" +
+                "          list-style-position: inside;\n" +
+                "          margin-left: 5px; }\n" +
+                "      a {\n" +
+                "        color: #3498db;\n" +
+                "        text-decoration: underline; }\n" +
+                "\n" +
+                "\n" +
+                "      .card_container{\n" +
+                "        display: flex;\n" +
+                "        margin-bottom: 20px;\n" +
+                "        border: 4px solid #3498db;\n" +
+                "        border-radius: 15px;\n" +
+                "      }\n" +
+                "      \n" +
+                "      .left_panel{\n" +
+                "        background-color: #3498db;\n" +
+                "        width: 10%;\n" +
+                "      }\n" +
+                "        .détails{\n" +
+                "        display: flex;\n" +
+                "        flex-direction: column;\n" +
+                "        Margin: 0 auto;\n" +
+                "        \n" +
+                "        align-content: center;\n" +
+                "        /* makes it centered */\n" +
+                "        max-width: 580px;\n" +
+                "        padding: 10px;\n" +
+                "        width: 90%;\n" +
+                "    \n" +
+                "      }\n" +
+                "      .détails_élément{\n" +
+                "        align-items: center;\n" +
+                "    \n" +
+                "        margin-left: 0px;\n" +
+                "        font-size: 20px;\n" +
+                "      }\n" +
+                "      /* -------------------------------------\n" +
+                "          BUTTONS\n" +
+                "      ------------------------------------- */\n" +
+                "      .btn {\n" +
+                "        box-sizing: border-box;\n" +
+                "        width: 100%; }\n" +
+                "        .btn > tbody > tr > td {\n" +
+                "          padding-bottom: 15px; }\n" +
+                "        .btn table {\n" +
+                "          width: auto; }\n" +
+                "        .btn table td {\n" +
+                "          background-color: #ffffff;\n" +
+                "          border-radius: 5px;\n" +
+                "          text-align: center; }\n" +
+                "        .btn a {\n" +
+                "          background-color: #ffffff;\n" +
+                "          border: solid 1px #3498db;\n" +
+                "          border-radius: 5px;\n" +
+                "          box-sizing: border-box;\n" +
+                "          color: #3498db;\n" +
+                "          cursor: pointer;\n" +
+                "          display: inline-block;\n" +
+                "          font-size: 14px;\n" +
+                "          font-weight: bold;\n" +
+                "          margin: 0;\n" +
+                "          padding: 12px 25px;\n" +
+                "          text-decoration: none;\n" +
+                "          text-transform: capitalize; }\n" +
+                "      .btn-primary table td {\n" +
+                "        background-color: #3498db; }\n" +
+                "      .btn-primary a {\n" +
+                "        background-color: #3498db;\n" +
+                "        border-color: #3498db;\n" +
+                "        color: #ffffff; }\n" +
+                "      \n" +
+                "    </style>\n" +
+                "  </head>\n" +
+                "  <body class=\"\">\n" +
+                "    <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"body\">\n" +
+                "      <tr>\n" +
+                "        <td>&nbsp;</td>\n" +
+                "        <td class=\"container\">\n" +
+                "          <div class=\"content\">\n" +
+                "            \n" +
+                "            <table class=\"main\">\n" +
+                "\n" +
+                "              <!-- START MAIN CONTENT AREA -->\n" +
+                "              <tr>\n" +
+                "                <td class=\"wrapper\">\n" +
+                "                  <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\">\n" +
+                "                    <tr>\n" +
+                "                      <td>\n" +
+                "                        <h1>"+ name +", votre rendez-vous a bien été modifié!</h1>\n" +
+                "                        <h2>Bonjour, votre demande a bien été traitée. Voici les détails concernant votre nouveau rendez-vous:</h2>\n" +
+                "                        <div class=\"card_container\">\n" +
+                "                          <div class=\"left_panel\"></div>\n" +
+                "                          <div class=\"détails\">\n" +
+                "                            <div class=\"détails_élément\">Date: "+date.toLocalDate()+"</div>\n" +
+                "                            <div class=\"détails_élément\">Heure: "+date.toLocalTime()+"</div>\n" +
+                "                            <div class=\"détails_élément\">Moyen de communication:"+comm+"</div>\n" +
+                "                          </div>\n" +
+                "                        </div>\n" +
+                "                        <h2>Vous êtes donc attendu le "+date.toLocalDate()+" à "+date.toLocalTime()+" sur "+comm+".</h2>\n" +
                 "                        <h2>Pour accéder au site de réservation, cliquez sur le lien ci-dessous:</h2>\n" +
                 "                        <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"btn btn-primary\">\n" +
                 "                          <tbody>\n" +
