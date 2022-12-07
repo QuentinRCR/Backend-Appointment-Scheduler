@@ -424,7 +424,7 @@ public class Rendez_vousController {
                 "                            <div class=\"détails_élément\">Moyen de communication:"+comm+"</div>\n" +
                 "                          </div>\n" +
                 "                        </div>\n" +
-                "                        <h2>Vous êtes donc attendu le "+date.getDayOfMonth()/date.getMonthValue()+" à "+date.toLocalTime()+" sur "+comm+"</h2>\n" +
+                "                        <h2>Vous êtes donc attendu le "+date.toLocalDate()+" à "+date.toLocalTime()+" sur "+comm+".</h2>\n" +
                 "                        <h2>Pour accéder au site de réservation, cliquez sur le lien ci-dessous:</h2>\n" +
                 "                        <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"btn btn-primary\">\n" +
                 "                          <tbody>\n" +
