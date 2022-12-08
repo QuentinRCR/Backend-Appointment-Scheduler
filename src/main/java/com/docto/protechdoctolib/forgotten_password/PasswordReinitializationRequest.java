@@ -2,13 +2,13 @@ package com.docto.protechdoctolib.forgotten_password;
 
 public class PasswordReinitializationRequest {
 
-    String email;
+    String password;
 
-    public String getEmail() {
-        return email;
+    public String getPassword() {
+        return password;
     }
 
-    public PasswordReinitializationRequest(String email) {
-        this.email = email;
+    public PasswordReinitializationRequest(String password) {
+        this.password = password;
     }
 }
