@@ -156,15 +156,28 @@ public class Rendez_vousController {
         Long creneauId = creneauMatch.getId(); //If a slot is found, assign the value of the corresponding slot
         Rendez_vous rendez_vous = null;
         // On creation id is not defined
+        if( //check appointment is the time slot
+                (dto.getDateDebut().toLocalTime().isBefore(creneauMatch.getHeuresDebutFin().get(0).getTempsDebut())) ||
+                        (dto.getDateDebut().toLocalTime().plus(Duration.ofMinutes(30)).isAfter(creneauMatch.getHeuresDebutFin().get(0).getTempsFin()))
+        ){
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST, "outside time slots"
+            );
+        }
+        if(rendez_vousDAO.findByDateDebut(dto.getDateDebut()).size()>0){ //detect if there already are an appointment at this time
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT, "already an appointment at this time"
+            );
+        }
         if (dto.getId() == null) {
             rendez_vous = rendez_vousDAO.save(new Rendez_vous(dto.getId(), creneauId ,dto.getIdUser(), dto.getDateDebut(), dto.getDuree(), dto.getMoyenCommunication(),dto.getZoomLink())); //Create new appointment
             //envoi mail de confirmation prise de rdv
             User user= userRepository.findById(dto.getIdUser()).get();
-            emailService.sendEmail(
+            /*emailService.sendEmail(
                     user.getEmail(),
                     "Confirmation prise de rendez-vous",
                     buildEmailConfirmationRdv(user.getPrenom(), "link", dto.getDateDebut(),dto.getMoyenCommunication()));
-
+*/
 
         } else {
             rendez_vous = rendez_vousDAO.getReferenceById(dto.getId());  //Modify existing appointment

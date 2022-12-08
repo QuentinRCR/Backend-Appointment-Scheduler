@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -26,5 +27,8 @@ public interface Rendez_vousDAO extends JpaRepository<Rendez_vous, Long> {
      */
     @Query("select c from Rendez_vous c where c.idCreneau=:idCreneau")  // (2)
     List<Rendez_vous> findAllByIdCreneau(@Param("idCreneau") Long idCreneau);
+
+    @Query("select c from Rendez_vous c where c.dateDebut=:dateDebut")  // (2)
+    List<Rendez_vous> findByDateDebut(@Param("dateDebut") LocalDateTime dateDebut);
 
 }
