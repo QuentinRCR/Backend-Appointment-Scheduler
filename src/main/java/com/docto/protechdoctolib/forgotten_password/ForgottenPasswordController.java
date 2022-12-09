@@ -1,7 +1,5 @@
 package com.docto.protechdoctolib.forgotten_password;
 
-import com.docto.protechdoctolib.registration.RegistrationRequest;
-import com.docto.protechdoctolib.registration.token.ConfirmationToken;
 import com.docto.protechdoctolib.registration.token.ConfirmationTokenRepository;
 import com.docto.protechdoctolib.registration.token.ConfirmationTokenService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,8 +21,8 @@ public class ForgottenPasswordController {
     ConfirmationTokenService confirmationTokenService;
 
     @PostMapping
-    public String forgottenPassword(@RequestBody String email) {
-        return forgottenPasswordService.reinitializePassword(email);
+    public String forgottenPassword(@RequestBody ForgottenPasswordRequest forgottenPasswordRequest) {
+        return forgottenPasswordService.reinitializePassword(forgottenPasswordRequest.getEmail());
     }
 
      @GetMapping(path="confirm")
@@ -33,10 +31,10 @@ public class ForgottenPasswordController {
     }
 
     @PostMapping("passwordReinitialisation")
-    public void passwordReinitialization(@RequestBody ForgottenPasswordRequest forgottenPasswordRequest){
-        (confirmationTokenRepository.findByToken(forgottenPasswordRequest.getToken())).get()
-                .getUser().setPassword(passwordEncoder.encode(forgottenPasswordRequest.getPassword()));
-        confirmationTokenService.setConfirmedAt(forgottenPasswordRequest.getToken());
+    public void passwordReinitialization(@RequestBody PasswordReinitializationRequest passwordReinitializationRequest){
+        (confirmationTokenRepository.findByToken(passwordReinitializationRequest.getToken())).get()
+                .getUser().setPassword(passwordEncoder.encode(passwordReinitializationRequest.getPassword()));
+        confirmationTokenService.setConfirmedAt(passwordReinitializationRequest.getToken());
 
     }
 }

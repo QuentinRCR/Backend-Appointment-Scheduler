@@ -2,19 +2,13 @@ package com.docto.protechdoctolib.forgotten_password;
 
 public class ForgottenPasswordRequest {
 
-    String password;
-    String token;
+    String email;
 
-    public String getPassword() {
-        return password;
+    public String getEmail() {
+        return email;
     }
 
-    public String getToken() {
-        return token;
-    }
-
-    public ForgottenPasswordRequest(String password, String token) {
-        this.password = password;
-        this.token=token;
+    public ForgottenPasswordRequest(String email) {
+        this.email = email;
     }
 }
