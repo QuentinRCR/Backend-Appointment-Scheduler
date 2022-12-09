@@ -53,7 +53,7 @@ public class WebSecurityConfig {
         customAuthenticationFilter.setFilterProcessesUrl("/api/login");
         http.csrf().disable();
 
-        http.authorizeRequests().antMatchers("/api/login/**", "/api/token/refresh/**","/api/registration/**").permitAll();
+        http.authorizeRequests().antMatchers("/api/login/**", "/api/token/refresh/**","/api/registration/**","/api/forgotten_password/**").permitAll();
         http.authorizeRequests().antMatchers(GET,"/api/rendez_vous/**").hasAnyAuthority("USER","ADMIN");
         http.authorizeRequests().antMatchers(GET,"/api/creneaux/**").hasAnyAuthority("USER","ADMIN");
         http.authorizeRequests().antMatchers(POST,"/api/creneaux/**").hasAnyAuthority("ADMIN");

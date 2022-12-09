@@ -30,7 +30,7 @@ public class ForgottenPasswordService {
             String token = UUID.randomUUID().toString();
 
 
-            String link="http://localhost:5173/formedChangedPassword?token=" + token;
+            String link="http://localhost:5173/formChangedPassword?token=" + token;
             ConfirmationToken confirmationToken = new ConfirmationToken(
                     token,
                     LocalDateTime.now(),
