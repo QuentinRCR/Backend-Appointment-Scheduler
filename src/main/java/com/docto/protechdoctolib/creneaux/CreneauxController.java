@@ -43,7 +43,7 @@ public class CreneauxController {
      *
      * @return une liste de tous les créneaux
      */
-    @GetMapping
+    @GetMapping(path = "/user")
     public List<CreneauxDTO> findAll() {
         logger.info("la fonction findAll à été utilisé");
         return creneauxDAO.findAll().stream().map(CreneauxDTO::new).collect(Collectors.toList());
@@ -55,7 +55,7 @@ public class CreneauxController {
      * @param id
      * @return créneau
      */
-    @GetMapping(path = "/{id}")
+    @GetMapping(path = "/user/{id}")
     public CreneauxDTO findById(@PathVariable Long id) {
         logger.info("la fonction findById à été utilisé avec l'id " + id.toString());
         CreneauxDTO creneauId = creneauxDAO.findById(id).map(CreneauxDTO::new).orElse(null);
@@ -74,7 +74,7 @@ public class CreneauxController {
      *
      * @param id id du créneau à supprimer
      */
-    @DeleteMapping(path = "/{id}")
+    @DeleteMapping(path = "/admin/{id}")
     public void deleteParId(@PathVariable Long id) {
         logger.info("le créneau avec l'id " + id.toString() + " a été supprimé");
         try {
@@ -98,7 +98,7 @@ public class CreneauxController {
      * @param dto
      * @return le dto du créneau crée
      */
-    @PostMapping("/create_or_modify") // (8)
+    @PostMapping("/admin/create_or_modify") // (8)
     public CreneauxDTO create_or_modify(@RequestBody CreneauxDTO dto) {
         Creneaux creneaux = null;
         HeuresDebutFin heuresDebutFin1 = null;

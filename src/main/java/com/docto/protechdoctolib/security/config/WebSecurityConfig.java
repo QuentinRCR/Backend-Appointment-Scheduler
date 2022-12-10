@@ -23,8 +23,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.springframework.http.HttpMethod.GET;
-import static org.springframework.http.HttpMethod.POST;
+import static org.springframework.http.HttpMethod.*;
 
 @Configuration
 @EnableWebSecurity
@@ -55,11 +54,12 @@ public class WebSecurityConfig {
 
         http.authorizeRequests().antMatchers("/api/login/**", "/api/token/refresh/**","/api/registration/**","/api/forgotten_password/**").permitAll();
         http.authorizeRequests().antMatchers(GET,"/api/rendez_vous/**").hasAnyAuthority("USER","ADMIN");
-        http.authorizeRequests().antMatchers(GET,"/api/creneaux/**").hasAnyAuthority("USER","ADMIN");
-        http.authorizeRequests().antMatchers(POST,"/api/creneaux/**").hasAnyAuthority("ADMIN");
-        http.authorizeRequests().antMatchers(POST,"/api/users").hasAnyAuthority("ADMIN");
+        http.authorizeRequests().antMatchers(GET,"/api/creneaux/user/**").hasAnyAuthority("USER","ADMIN");
+        http.authorizeRequests().antMatchers(POST,"/api/creneaux/admin/**").hasAnyAuthority("ADMIN");
+        http.authorizeRequests().antMatchers(DELETE,"/api/creneaux/admin/**").hasAnyAuthority("ADMIN");
+        http.authorizeRequests().antMatchers(POST,"/api/users/**").hasAnyAuthority("ADMIN");
 
-        http.authorizeRequests().anyRequest().authenticated();
+        http.authorizeRequests().anyRequest().denyAll();
         http.formLogin();
         http.addFilter(customAuthenticationFilter);
         http.addFilterBefore(new CustomAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
