@@ -21,8 +21,8 @@ public class ForgottenPasswordController {
     ConfirmationTokenService confirmationTokenService;
 
     @PostMapping
-    public String forgottenPassword(@RequestBody ForgottenPasswordRequest forgottenPasswordRequest) {
-        return forgottenPasswordService.reinitializePassword(forgottenPasswordRequest.getEmail());
+    public String forgottenPassword(@RequestBody String email) {
+        return forgottenPasswordService.reinitializePassword(email.replace("%40","@").substring(0,email.length()-3)); //to correct encoding errors
     }
 
      @GetMapping(path="confirm")

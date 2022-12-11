@@ -173,11 +173,11 @@ public class Rendez_vousController {
             rendez_vous = rendez_vousDAO.save(new Rendez_vous(dto.getId(), creneauId ,dto.getIdUser(), dto.getDateDebut(), dto.getDuree(), dto.getMoyenCommunication(),dto.getZoomLink())); //Create new appointment
             //envoi mail de confirmation prise de rdv
             User user= userRepository.findById(dto.getIdUser()).get();
-            /*emailService.sendEmail(
+            emailService.sendEmail(
                     user.getEmail(),
                     "Confirmation prise de rendez-vous",
                     buildEmailConfirmationRdv(user.getPrenom(), "link", dto.getDateDebut(),dto.getMoyenCommunication()));
-*/
+
 
         } else {
             rendez_vous = rendez_vousDAO.getReferenceById(dto.getId());  //Modify existing appointment

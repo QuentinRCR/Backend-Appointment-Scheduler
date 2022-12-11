@@ -54,12 +54,15 @@ public class WebSecurityConfig {
 
         http.authorizeRequests().antMatchers("/api/login/**", "/api/token/refresh/**","/api/registration/**","/api/forgotten_password/**").permitAll();
         http.authorizeRequests().antMatchers(GET,"/api/rendez_vous/**").hasAnyAuthority("USER","ADMIN");
+        http.authorizeRequests().antMatchers(POST,"/api/rendez_vous/**").hasAnyAuthority("USER","ADMIN");
+        http.authorizeRequests().antMatchers(DELETE,"/api/rendez_vous/**").hasAnyAuthority("USER","ADMIN");
         http.authorizeRequests().antMatchers(GET,"/api/creneaux/user/**").hasAnyAuthority("USER","ADMIN");
         http.authorizeRequests().antMatchers(POST,"/api/creneaux/admin/**").hasAnyAuthority("ADMIN");
         http.authorizeRequests().antMatchers(DELETE,"/api/creneaux/admin/**").hasAnyAuthority("ADMIN");
         http.authorizeRequests().antMatchers(POST,"/api/users/**").hasAnyAuthority("ADMIN");
 
-        http.authorizeRequests().anyRequest().denyAll();
+
+        http.authorizeRequests().anyRequest().permitAll();
         http.formLogin();
         http.addFilter(customAuthenticationFilter);
         http.addFilterBefore(new CustomAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
