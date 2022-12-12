@@ -27,24 +27,12 @@ public class RegistrationService {
     private final ConfirmationTokenService confirmationTokenService;
     private final EmailService emailService;
 
-    private CleanRepository cleanRepository;
-
-    private UserRepository userRepository;
-
-    private ConfirmationTokenRepository confirmationTokenRepository;
-
-    private Rendez_vousDAO rendez_vousDAO;
-
 
     public RegistrationService(EmailValidator emailValidator, UserService userService, ConfirmationTokenService confirmationTokenService,/*, EmailSender emailSender*/EmailService emailSender, EmailService emailService, CleanRepository cleanRepository, UserRepository userRepository, ConfirmationTokenRepository confirmationTokenRepository, Rendez_vousDAO rendez_vousDAO) {
         this.emailValidator = emailValidator;
         this.userService = userService;
         this.confirmationTokenService = confirmationTokenService;
         this.emailService = emailService;
-        this.cleanRepository = cleanRepository;
-        this.userRepository = userRepository;
-        this.confirmationTokenRepository = confirmationTokenRepository;
-        this.rendez_vousDAO = rendez_vousDAO;
     }
 
     /** Si l'email est valide selon les contraintes de email validator, la requête est exécutée et l'utilisateur est enregistré.
@@ -72,18 +60,6 @@ public class RegistrationService {
                 request.getEmail(),
                 "Lien d'activation de votre compte",
                 buildEmail(request.getNom(), link));
-
-        List<ConfirmationToken> aa = cleanRepository.findCreneauxAfterDate(LocalDateTime.now().minus(Duration.ofDays(1825)));
-        List<User> usersToDelete = new ArrayList<User>();
-        for (int i=0; i< aa.size(); i++){
-            usersToDelete.add(aa.get(i).getUser());
-            List<Rendez_vous> bb = rendez_vousDAO.findAllByIdUser(aa.get(i).getUser().getId());
-            for (int j=0; j<bb.size();j++){
-                rendez_vousDAO.deleteById(bb.get(j).getId());
-            }
-            confirmationTokenRepository.deleteById(aa.get(i).getId());
-            userRepository.deleteById(usersToDelete.get(i).getId());
-        }
 
         return token;
     }

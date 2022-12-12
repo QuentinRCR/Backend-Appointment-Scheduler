@@ -19,7 +19,7 @@ import java.util.List;
 public interface CleanRepository extends JpaRepository<ConfirmationToken, Long> {
 
     @Query("select u from ConfirmationToken u where u.createdAt<=:datee")  // (2)
-    List<ConfirmationToken> findCreneauxAfterDate(@Param("datee") LocalDateTime datee);
+    List<ConfirmationToken> findCrenauxToDelete(@Param("datee") LocalDateTime datee);
 
 
 
