@@ -17,8 +17,12 @@ public interface Rendez_vousDAO extends JpaRepository<Rendez_vous, Long> {
      * @param idClient
      * @return Liste des rendez-vous pris par le client
      */
-    @Query("select c from Rendez_vous c where c.idUser=:idClient")  // (2)
+    @Query("select c from Rendez_vous c where c.idUser=:idClient order by c.dateDebut desc ")  // (2)
     List<Rendez_vous> findAllByIdUser(@Param("idClient") Long idClient);
+
+
+    @Query("select c from Rendez_vous c order by c.dateDebut desc")  // (2)
+    List<Rendez_vous> findAll();
 
     /**
      * Permet de trouver tous les rendez-vous qui sont dans un créneau
