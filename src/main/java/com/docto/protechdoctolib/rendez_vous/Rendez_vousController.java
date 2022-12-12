@@ -62,8 +62,8 @@ public class Rendez_vousController {
         DecodedJWT decodedJWT = verifier.verify(acces_token);
         String auth = decodedJWT.getClaim("roles").asArray(String.class)[0];
 
-
-        List<Rendez_vousDTO> aa= rendez_vousDAO.findAll().subList(0,100).stream().map(Rendez_vousDTO::new).collect(Collectors.toList()); //the subList is to avoid adding loading time
+        List<Rendez_vous> rendez_vousList=rendez_vousDAO.findAll();
+        List<Rendez_vousDTO> aa= rendez_vousList.subList(0,Integer.min(100,rendez_vousList.size())).stream().map(Rendez_vousDTO::new).collect(Collectors.toList()); //the subList is to avoid adding loading time
         if (auth.equals("USER")){ //anonymize the id user when a user call the api
             aa.forEach(rdv -> {
                 if(rdv.getIdUser()!=Long.parseLong(decodedJWT.getKeyId())){ //if it is its own appointment when let the id
@@ -91,7 +91,7 @@ public class Rendez_vousController {
         String auth = decodedJWT.getClaim("roles").asArray(String.class)[0];
         if (auth.equals("ADMIN")){ //if the right rights, send all the appointements
             List<Rendez_vous> rendez_vousList= rendez_vousDAO.findAll();
-            return rendez_vousList.subList(0,100).stream().map(Rendez_vousDTO::new).collect(Collectors.toList()); //the sublist is to avoid adding time to load old appointements
+            return rendez_vousList.subList(0,Integer.min(100,rendez_vousList.size())).stream().map(Rendez_vousDTO::new).collect(Collectors.toList()); //the sublist is to avoid adding time to load old appointements
         }
         else{
             Long id = Long.parseLong(decodedJWT.getKeyId());
@@ -175,6 +175,13 @@ public class Rendez_vousController {
         Long creneauId = creneauMatch.getId(); //If a slot is found, assign the value of the corresponding slot
         Rendez_vous rendez_vous = null;
         // On creation id is not defined
+
+        if( (dto.getDateDebut().isBefore(LocalDateTime.now()))){
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN, "outside time slots"
+            );
+        }
+
         if( //check appointment is the time slot
                 (dto.getDateDebut().toLocalTime().isBefore(creneauMatch.getHeuresDebutFin().get(0).getTempsDebut())) ||
                         (dto.getDateDebut().toLocalTime().plus(Duration.ofMinutes(30)).isAfter(creneauMatch.getHeuresDebutFin().get(0).getTempsFin()))
