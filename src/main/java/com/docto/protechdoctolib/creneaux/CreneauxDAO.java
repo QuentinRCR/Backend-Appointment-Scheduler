@@ -17,4 +17,7 @@ public interface CreneauxDAO extends JpaRepository<Creneaux, Long> {
     @Query("select c from Creneaux c where c.dateFin>=:datee")  // (2)
     List<Creneaux> findCreneauxAfterDate(@Param("datee") LocalDate datee);
 
+    @Query("select c from Creneaux c order by c.dateFin desc")  // (2)
+    List<Creneaux> findAll();
+
 }
