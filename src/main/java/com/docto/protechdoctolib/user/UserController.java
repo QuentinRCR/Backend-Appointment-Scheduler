@@ -4,6 +4,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.docto.protechdoctolib.creneaux.CreneauxDTO;
 import com.docto.protechdoctolib.rendez_vous.Rendez_vousDTO;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
@@ -66,6 +67,24 @@ public class UserController {
             );
         } else {
             return userDTO;
+        }
+
+    }
+
+    /**
+     * Give user infos by id
+     * @param id
+     * @return
+     */
+    @GetMapping(path = "/admin/{id}")
+    public UserDTO findById(@PathVariable Long id) {
+        UserDTO creneauId = userDAO.findById(id).map(UserDTO::new).orElse(null);
+        if (creneauId == null) {
+            throw new ResponseStatusException( //if not found throw 404 error
+                    HttpStatus.NOT_FOUND, "entity not found"
+            );
+        } else {
+            return creneauId;
         }
 
     }

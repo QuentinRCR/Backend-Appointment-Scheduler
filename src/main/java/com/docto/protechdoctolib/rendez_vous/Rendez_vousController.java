@@ -54,8 +54,26 @@ public class Rendez_vousController {
      * @return une liste de tous les rdvs
      */
     @GetMapping("/user")
-    public List<Rendez_vousDTO> findAll() {
-        return rendez_vousDAO.findAll().stream().map(Rendez_vousDTO::new).collect(Collectors.toList());
+    public List<Rendez_vousDTO> findAll(HttpServletRequest request) {
+        String authorizationHeader = request.getHeader(AUTHORIZATION);
+        String acces_token = authorizationHeader.substring("Bearer ".length());
+        Algorithm algorithm = Algorithm.HMAC256("secret".getBytes()); //TODO check video around 17min-1:38h should crypt the token
+        JWTVerifier verifier = JWT.require(algorithm).build();
+        DecodedJWT decodedJWT = verifier.verify(acces_token);
+        String auth = decodedJWT.getClaim("roles").asArray(String.class)[0];
+
+
+        List<Rendez_vousDTO> aa= rendez_vousDAO.findAll().stream().map(Rendez_vousDTO::new).collect(Collectors.toList());
+        if (auth.equals("USER")){ //anonymize the id user when a user call the api
+            aa.forEach(rdv -> {
+                if(rdv.getIdUser()!=Long.parseLong(decodedJWT.getKeyId())){ //if it is its own appointment when let the id
+                    rdv.setIdUser(null);
+                }
+            });
+        }
+
+
+        return  aa;
     }
 
     /**
