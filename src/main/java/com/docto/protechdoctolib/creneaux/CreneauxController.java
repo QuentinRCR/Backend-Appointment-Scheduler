@@ -46,7 +46,7 @@ public class CreneauxController {
     @GetMapping(path = "/user")
     public List<CreneauxDTO> findAll() {
         logger.info("la fonction findAll à été utilisé");
-        return creneauxDAO.findAll().stream().map(CreneauxDTO::new).collect(Collectors.toList());
+        return creneauxDAO.findAll().subList(0,30).stream().map(CreneauxDTO::new).collect(Collectors.toList()); //the subList is to avoid loading useless slots
     }
 
     /**
