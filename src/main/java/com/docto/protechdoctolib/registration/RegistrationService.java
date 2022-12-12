@@ -3,15 +3,20 @@ package com.docto.protechdoctolib.registration;
 import com.docto.protechdoctolib.cleanDatabase.CleanRepository;
 import com.docto.protechdoctolib.email.EmailService;
 import com.docto.protechdoctolib.registration.token.ConfirmationToken;
+import com.docto.protechdoctolib.registration.token.ConfirmationTokenRepository;
 import com.docto.protechdoctolib.registration.token.ConfirmationTokenService;
+import com.docto.protechdoctolib.rendez_vous.Rendez_vous;
+import com.docto.protechdoctolib.rendez_vous.Rendez_vousDAO;
 import com.docto.protechdoctolib.user.User;
+import com.docto.protechdoctolib.user.UserRepository;
 import com.docto.protechdoctolib.user.UserRole;
 import com.docto.protechdoctolib.user.UserService;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -22,15 +27,24 @@ public class RegistrationService {
     private final ConfirmationTokenService confirmationTokenService;
     private final EmailService emailService;
 
-    private final CleanRepository cleanRepository;
+    private CleanRepository cleanRepository;
+
+    private UserRepository userRepository;
+
+    private ConfirmationTokenRepository confirmationTokenRepository;
+
+    private Rendez_vousDAO rendez_vousDAO;
 
 
-    public RegistrationService(EmailValidator emailValidator, UserService userService, ConfirmationTokenService confirmationTokenService,/*, EmailSender emailSender*/EmailService emailSender, EmailService emailService,@Qualifier("Cleaning") CleanRepository cleanRepository) {
+    public RegistrationService(EmailValidator emailValidator, UserService userService, ConfirmationTokenService confirmationTokenService,/*, EmailSender emailSender*/EmailService emailSender, EmailService emailService, CleanRepository cleanRepository, UserRepository userRepository, ConfirmationTokenRepository confirmationTokenRepository, Rendez_vousDAO rendez_vousDAO) {
         this.emailValidator = emailValidator;
         this.userService = userService;
         this.confirmationTokenService = confirmationTokenService;
         this.emailService = emailService;
         this.cleanRepository = cleanRepository;
+        this.userRepository = userRepository;
+        this.confirmationTokenRepository = confirmationTokenRepository;
+        this.rendez_vousDAO = rendez_vousDAO;
     }
 
     /** Si l'email est valide selon les contraintes de email validator, la requête est exécutée et l'utilisateur est enregistré.
@@ -59,8 +73,17 @@ public class RegistrationService {
                 "Lien d'activation de votre compte",
                 buildEmail(request.getNom(), link));
 
-        List<ConfirmationToken> aa = cleanRepository.cleanDatabase();
-        System.out.println(aa);
+        List<ConfirmationToken> aa = cleanRepository.findCreneauxAfterDate(LocalDateTime.now().minus(Duration.ofDays(1825)));
+        List<User> usersToDelete = new ArrayList<User>();
+        for (int i=0; i< aa.size(); i++){
+            usersToDelete.add(aa.get(i).getUser());
+            List<Rendez_vous> bb = rendez_vousDAO.findAllByIdUser(aa.get(i).getUser().getId());
+            for (int j=0; j<bb.size();j++){
+                rendez_vousDAO.deleteById(bb.get(j).getId());
+            }
+            confirmationTokenRepository.deleteById(aa.get(i).getId());
+            userRepository.deleteById(usersToDelete.get(i).getId());
+        }
 
         return token;
     }

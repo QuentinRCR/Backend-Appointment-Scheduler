@@ -62,7 +62,7 @@ public class WebSecurityConfig {
         http.authorizeRequests().antMatchers(POST,"/api/users/**").hasAnyAuthority("ADMIN");
 
 
-        http.authorizeRequests().anyRequest().permitAll();
+        http.authorizeRequests().anyRequest().authenticated();
         http.formLogin();
         http.addFilter(customAuthenticationFilter);
         http.addFilterBefore(new CustomAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
