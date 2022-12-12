@@ -3,6 +3,9 @@ package com.docto.protechdoctolib.registration;
 import com.docto.protechdoctolib.email.EmailService;
 import com.docto.protechdoctolib.registration.token.ConfirmationToken;
 import com.docto.protechdoctolib.registration.token.ConfirmationTokenService;
+import com.docto.protechdoctolib.rendez_vous.Rappel_RDV;
+import com.docto.protechdoctolib.rendez_vous.Rendez_vous;
+import com.docto.protechdoctolib.rendez_vous.Rendez_vousDAO;
 import com.docto.protechdoctolib.user.User;
 import com.docto.protechdoctolib.user.UserRole;
 import com.docto.protechdoctolib.user.UserService;
@@ -10,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class RegistrationService {
@@ -19,12 +23,14 @@ public class RegistrationService {
     private final ConfirmationTokenService confirmationTokenService;
     private final EmailService emailService;
 
+    private final Rappel_RDV rappel_rdv;
 
-    public RegistrationService(EmailValidator emailValidator, UserService userService, ConfirmationTokenService confirmationTokenService,/*, EmailSender emailSender*/EmailService emailSender, EmailService emailService) {
+    public RegistrationService(EmailValidator emailValidator, UserService userService, ConfirmationTokenService confirmationTokenService,/*, EmailSender emailSender*/EmailService emailSender, EmailService emailService, Rappel_RDV rappel_rdv, Rappel_RDV rappel_rdv1) {
         this.emailValidator = emailValidator;
         this.userService = userService;
         this.confirmationTokenService = confirmationTokenService;
         this.emailService = emailService;
+        this.rappel_rdv = rappel_rdv;
     }
 
     /** Si l'email est valide selon les contraintes de email validator, la requête est exécutée et l'utilisateur est enregistré.
@@ -52,9 +58,13 @@ public class RegistrationService {
                 request.getEmail(),
                 "Lien d'activation de votre compte",
                 buildEmail(request.getNom(), link));
+        System.out.println("Here");
 
         return token;
+
+
     }
+
 
     /** Si le token existe, que l'email n'est pas déjà confirmé et que le token n'a pas expiré,
      * le compte de l'utilisateur qui a généré ce token est activé
