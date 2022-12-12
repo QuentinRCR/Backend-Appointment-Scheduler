@@ -53,7 +53,7 @@ public class Rendez_vousController {
      *
      * @return une liste de tous les rdvs
      */
-    @GetMapping
+    @GetMapping("/user")
     public List<Rendez_vousDTO> findAll() {
         return rendez_vousDAO.findAll().stream().map(Rendez_vousDTO::new).collect(Collectors.toList());
     }
@@ -63,7 +63,7 @@ public class Rendez_vousController {
      * @param request
      * @return
      */
-    @GetMapping("/auth")
+    @GetMapping("/user/auth")
     public List<Rendez_vousDTO> findAllByAuth(HttpServletRequest request){
         String authorizationHeader = request.getHeader(AUTHORIZATION);
         String acces_token = authorizationHeader.substring("Bearer ".length());
@@ -86,7 +86,7 @@ public class Rendez_vousController {
      * @param id
      * @return rdv
      */
-    @GetMapping(path = "/{id}")
+    @GetMapping(path = "/admin/{id}")
     public Rendez_vousDTO findById(@PathVariable Long id) {
         Rendez_vousDTO rendez_vousId= rendez_vousDAO.findById(id).map(Rendez_vousDTO::new).orElse(null);
         if (rendez_vousId==null){
@@ -114,7 +114,7 @@ public class Rendez_vousController {
      * Supprime le créneau ayant pour id le paramètre
      * @param id
      */
-    @DeleteMapping(path = "/{id}")
+    @DeleteMapping(path = "/user/{id}")
     public void deleteParId(@PathVariable Long id) {
         try{
             rendez_vousDAO.deleteById(id);
@@ -133,7 +133,7 @@ public class Rendez_vousController {
      * @param dto
      * @return le dto du rdv crée
      */
-    @PostMapping("/create_or_modify") // (8)
+    @PostMapping("/user/create_or_modify") // (8)
     public Rendez_vousDTO create_or_modify(@RequestBody Rendez_vousDTO dto,HttpServletRequest request) {
         CreneauxDTO creneauMatch = isWithinASlot(dto.getDateDebut(),dto.getDuree()); //Get the slot in which the appointment fit.
         if (creneauMatch == null){ //If there is no corresponding slot, throw 404 error

@@ -53,16 +53,23 @@ public class WebSecurityConfig {
         http.csrf().disable();
 
         http.authorizeRequests().antMatchers("/api/login/**", "/api/token/refresh/**","/api/registration/**","/api/forgotten_password/**").permitAll();
-        http.authorizeRequests().antMatchers(GET,"/api/rendez_vous/**").hasAnyAuthority("USER","ADMIN");
-        http.authorizeRequests().antMatchers(POST,"/api/rendez_vous/**").hasAnyAuthority("USER","ADMIN");
-        http.authorizeRequests().antMatchers(DELETE,"/api/rendez_vous/**").hasAnyAuthority("USER","ADMIN");
+        http.authorizeRequests().antMatchers(GET,"/api/rendez_vous/user/**").hasAnyAuthority("USER","ADMIN");
+        http.authorizeRequests().antMatchers(POST,"/api/rendez_vous/user/**").hasAnyAuthority("USER","ADMIN");
+        http.authorizeRequests().antMatchers(DELETE,"/api/rendez_vous/user/**").hasAnyAuthority("USER","ADMIN");
+        http.authorizeRequests().antMatchers(GET,"/api/rendez_vous/admin/**").hasAnyAuthority("ADMIN");
+
+
         http.authorizeRequests().antMatchers(GET,"/api/creneaux/user/**").hasAnyAuthority("USER","ADMIN");
         http.authorizeRequests().antMatchers(POST,"/api/creneaux/admin/**").hasAnyAuthority("ADMIN");
         http.authorizeRequests().antMatchers(DELETE,"/api/creneaux/admin/**").hasAnyAuthority("ADMIN");
-        http.authorizeRequests().antMatchers(POST,"/api/users/**").hasAnyAuthority("ADMIN");
+
+        http.authorizeRequests().antMatchers(GET,"/api/users/user/**").hasAnyAuthority("ADMIN","USER");
+        http.authorizeRequests().antMatchers(POST,"/api/users/user/**").hasAnyAuthority("ADMIN","USER");
+        http.authorizeRequests().antMatchers(DELETE,"/api/users/user/**").hasAnyAuthority("ADMIN","USER");
+        http.authorizeRequests().antMatchers(GET,"/api/users/admin/**").hasAnyAuthority("ADMIN");
 
 
-        http.authorizeRequests().anyRequest().permitAll();
+        http.authorizeRequests().anyRequest().authenticated();
         http.formLogin();
         http.addFilter(customAuthenticationFilter);
         http.addFilterBefore(new CustomAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);

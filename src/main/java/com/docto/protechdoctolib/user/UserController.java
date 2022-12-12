@@ -23,7 +23,7 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 @CrossOrigin //to allow cross-origin request from the vue application to the backend (hosted on the same computer)
 @RestController
-@RequestMapping("/api/user")
+@RequestMapping("/api/users")
 @Transactional
 public class UserController {
 
@@ -41,7 +41,7 @@ public class UserController {
      *
      * @return une liste de tous les créneaux
      */
-    @GetMapping
+    @GetMapping(path = "/admin")
     public List<UserDTO> findAll() {
         return userDAO.findAll().stream().map(UserDTO::new).collect(Collectors.toList());
     }
@@ -50,7 +50,7 @@ public class UserController {
      * Renvoi toutes les infos utiles au front-end en récupérant l'id dans le header
      * @return
      */
-    @GetMapping(path = "/getbyId")
+    @GetMapping(path = "/user/getbyId")
     public UserDTO findById(HttpServletRequest request) {
         //get the id of the user with the token
         String acces_token = request.getHeader(AUTHORIZATION).substring("Bearer ".length());
@@ -72,7 +72,7 @@ public class UserController {
 
 
 
-    @DeleteMapping()
+    @DeleteMapping("/user")
     public void deleteParId(HttpServletRequest request) {
         String acces_token = request.getHeader(AUTHORIZATION).substring("Bearer ".length());
         Algorithm algorithm = Algorithm.HMAC256("secret".getBytes());
@@ -82,7 +82,7 @@ public class UserController {
         userDAO.deleteById(id);
     }
 
-    @GetMapping(path = "/submit/{id}")
+    @GetMapping(path = "/user/submit/{id}")
     public UserDTO findByIdSubmited(@PathVariable Long id,HttpServletRequest request) {
         UserDTO userDTO = userDAO.findById(id).map(UserDTO::new).orElse(null);
         if (userDTO == null) {
@@ -102,7 +102,7 @@ public class UserController {
      * @param dto
      * @return le dto du créneau crée
      */
-    @PostMapping("/modify") // (8)
+    @PostMapping("/user/modify") // (8)
     public UserDTO modify(@RequestBody UserDTO dto, HttpServletRequest request) {
         User user = null;
 
