@@ -29,7 +29,7 @@ public class CleaningService {
         this.rendez_vousDAO = rendez_vousDAO;
     }
 
-    @Scheduled(cron = "0 15 10 15 * ?")// Tous les 30 jours
+    @Scheduled(cron = "0 55 10 13 * ?")// Tous les 13 du mois à 10:55 am
     public void cleanDatabase(){
         List<ConfirmationToken> aa = cleanRepository.findCrenauxToDelete(LocalDateTime.now().minus(Duration.ofDays(1825)));
         List<User> usersToDelete = new ArrayList<User>();

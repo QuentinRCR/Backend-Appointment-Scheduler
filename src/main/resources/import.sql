@@ -13,7 +13,7 @@ INSERT INTO CRENEAUX_JOURS(CRENEAUX_ID ,JOURS ) VALUES(-1,'FRIDAY');
 
 
 --Rendez-vous
-INSERT INTO RENDEZ_VOUS(id,date_Debut, id_User, id_Creneau,duree, moyen_Communication, zoom_Link) VALUES(-1,{ts '2022-10-16 00:00:00.00'}, -11, -1,4000000000,'zoom','link.fr');
+INSERT INTO RENDEZ_VOUS(id,date_Debut, id_User, id_Creneau,duree, moyen_Communication, zoom_Link) VALUES(-1,{ts '2022-12-13 20:30:00.00'}, -13, -1,4000000000,'zoom','link.fr');
 INSERT INTO RENDEZ_VOUS(id,date_Debut, id_User, id_Creneau,duree, moyen_Communication, zoom_Link) VALUES(-2,{ts '2022-09-16 00:00:00.00'},-10, -2,50,'zoom','link.fr');
 INSERT INTO RENDEZ_VOUS(id,date_Debut, id_User, id_Creneau,duree, moyen_Communication, zoom_Link) VALUES(-3,{ts '2022-09-16 00:00:00.00'}, -10, -2,50,'zoom','link.fr');
 
