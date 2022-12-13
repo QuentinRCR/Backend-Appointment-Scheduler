@@ -4,9 +4,10 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import com.docto.protechdoctolib.creneaux.CreneauxDTO;
-import com.docto.protechdoctolib.rendez_vous.Rendez_vousDTO;
-import org.springframework.dao.EmptyResultDataAccessException;
+import com.docto.protechdoctolib.registration.token.ConfirmationToken;
+import com.docto.protechdoctolib.registration.token.ConfirmationTokenRepository;
+import com.docto.protechdoctolib.rendez_vous.Rendez_vous;
+import com.docto.protechdoctolib.rendez_vous.Rendez_vousDAO;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
@@ -30,10 +31,16 @@ public class UserController {
 
     private final UserRepository userDAO;
 
+    private final Rendez_vousDAO rendez_vousDAO;
+
+    private final ConfirmationTokenRepository confirmationTokenRepository;
+
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    public UserController(UserRepository userDAO, BCryptPasswordEncoder bCryptPasswordEncoder) {
+    public UserController(UserRepository userDAO, Rendez_vousDAO rendez_vousDAO, ConfirmationTokenRepository confirmationTokenRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.userDAO = userDAO;
+        this.rendez_vousDAO = rendez_vousDAO;
+        this.confirmationTokenRepository = confirmationTokenRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
@@ -90,15 +97,30 @@ public class UserController {
     }
 
 
-
+    /**
+     * Delete all user information, activation token and appointements taken by the user making the request
+     * @param request
+     */
     @DeleteMapping("/user")
     public void deleteParId(HttpServletRequest request) {
+        //get the id of the person making the request
         String acces_token = request.getHeader(AUTHORIZATION).substring("Bearer ".length());
         Algorithm algorithm = Algorithm.HMAC256("secret".getBytes());
         JWTVerifier verifier = JWT.require(algorithm).build();
         DecodedJWT decodedJWT = verifier.verify(acces_token);
         Long id= Long.parseLong(decodedJWT.getKeyId());
-        userDAO.deleteById(id);
+
+        List<ConfirmationToken> aa= confirmationTokenRepository.findCrenauxByUserId(id); //get all confirmation tokens related to the user
+        List<Rendez_vous> bb = rendez_vousDAO.findAllByIdUser(id); //get all appointments related to the user
+        for (int j=0; j<bb.size();j++){ //delete each appointements
+            rendez_vousDAO.deleteById(bb.get(j).getId());
+        }
+        for (int j=0; j<aa.size();j++){ //delete each confirmation token
+            confirmationTokenRepository.deleteById(aa.get(j).getId());
+        }
+
+        userDAO.deleteById(id); //delete the user
+
     }
 
     @GetMapping(path = "/user/submit/{id}")
