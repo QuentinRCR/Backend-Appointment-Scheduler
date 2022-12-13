@@ -53,9 +53,27 @@ public class Rendez_vousController {
      *
      * @return une liste de tous les rdvs
      */
-    @GetMapping
-    public List<Rendez_vousDTO> findAll() {
-        return rendez_vousDAO.findAll().stream().map(Rendez_vousDTO::new).collect(Collectors.toList());
+    @GetMapping("/user")
+    public List<Rendez_vousDTO> findAll(HttpServletRequest request) {
+        String authorizationHeader = request.getHeader(AUTHORIZATION);
+        String acces_token = authorizationHeader.substring("Bearer ".length());
+        Algorithm algorithm = Algorithm.HMAC256("secret".getBytes()); //TODO check video around 17min-1:38h should crypt the token
+        JWTVerifier verifier = JWT.require(algorithm).build();
+        DecodedJWT decodedJWT = verifier.verify(acces_token);
+        String auth = decodedJWT.getClaim("roles").asArray(String.class)[0];
+
+        List<Rendez_vous> rendez_vousList=rendez_vousDAO.findAll();
+        List<Rendez_vousDTO> aa= rendez_vousList.subList(0,Integer.min(100,rendez_vousList.size())).stream().map(Rendez_vousDTO::new).collect(Collectors.toList()); //the subList is to avoid adding loading time
+        if (auth.equals("USER")){ //anonymize the id user when a user call the api
+            aa.forEach(rdv -> {
+                if(rdv.getIdUser()!=Long.parseLong(decodedJWT.getKeyId())){ //if it is its own appointment when let the id
+                    rdv.setIdUser(null);
+                }
+            });
+        }
+
+
+        return  aa;
     }
 
     /**
@@ -63,7 +81,7 @@ public class Rendez_vousController {
      * @param request
      * @return
      */
-    @GetMapping("/auth")
+    @GetMapping("/user/auth")
     public List<Rendez_vousDTO> findAllByAuth(HttpServletRequest request){
         String authorizationHeader = request.getHeader(AUTHORIZATION);
         String acces_token = authorizationHeader.substring("Bearer ".length());
@@ -72,7 +90,8 @@ public class Rendez_vousController {
         DecodedJWT decodedJWT = verifier.verify(acces_token);
         String auth = decodedJWT.getClaim("roles").asArray(String.class)[0];
         if (auth.equals("ADMIN")){ //if the right rights, send all the appointements
-            return rendez_vousDAO.findAll().stream().map(Rendez_vousDTO::new).collect(Collectors.toList());
+            List<Rendez_vous> rendez_vousList= rendez_vousDAO.findAll();
+            return rendez_vousList.subList(0,Integer.min(100,rendez_vousList.size())).stream().map(Rendez_vousDTO::new).collect(Collectors.toList()); //the sublist is to avoid adding time to load old appointements
         }
         else{
             Long id = Long.parseLong(decodedJWT.getKeyId());
@@ -86,7 +105,7 @@ public class Rendez_vousController {
      * @param id
      * @return rdv
      */
-    @GetMapping(path = "/{id}")
+    @GetMapping(path = "/admin/{id}")
     public Rendez_vousDTO findById(@PathVariable Long id) {
         Rendez_vousDTO rendez_vousId= rendez_vousDAO.findById(id).map(Rendez_vousDTO::new).orElse(null);
         if (rendez_vousId==null){
@@ -114,7 +133,7 @@ public class Rendez_vousController {
      * Supprime le créneau ayant pour id le paramètre
      * @param id
      */
-    @DeleteMapping(path = "/{id}")
+    @DeleteMapping(path = "/user/{id}")
     public void deleteParId(@PathVariable Long id) {
         try{
             rendez_vousDAO.deleteById(id);
@@ -133,7 +152,7 @@ public class Rendez_vousController {
      * @param dto
      * @return le dto du rdv crée
      */
-    @PostMapping("/create_or_modify") // (8)
+    @PostMapping("/user/create_or_modify") // (8)
     public Rendez_vousDTO create_or_modify(@RequestBody Rendez_vousDTO dto,HttpServletRequest request) {
         CreneauxDTO creneauMatch = isWithinASlot(dto.getDateDebut(),dto.getDuree()); //Get the slot in which the appointment fit.
         if (creneauMatch == null){ //If there is no corresponding slot, throw 404 error
@@ -156,6 +175,13 @@ public class Rendez_vousController {
         Long creneauId = creneauMatch.getId(); //If a slot is found, assign the value of the corresponding slot
         Rendez_vous rendez_vous = null;
         // On creation id is not defined
+
+        if( (dto.getDateDebut().isBefore(LocalDateTime.now()))){
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN, "outside time slots"
+            );
+        }
+
         if( //check appointment is the time slot
                 (dto.getDateDebut().toLocalTime().isBefore(creneauMatch.getHeuresDebutFin().get(0).getTempsDebut())) ||
                         (dto.getDateDebut().toLocalTime().plus(Duration.ofMinutes(30)).isAfter(creneauMatch.getHeuresDebutFin().get(0).getTempsFin()))
