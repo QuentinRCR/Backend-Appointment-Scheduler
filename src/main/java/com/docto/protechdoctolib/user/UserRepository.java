@@ -31,7 +31,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
             "SET u.enabled = TRUE WHERE u.email = ?1")
     int enableUser(String email);
 
-    @Query("select u from User c where u.Role='ADMIN'")  // (2)
-    List<User> findByRole();
+    @Query("select u from User u where u.user_role=:ROLE")  // (2)
+    List<User> findByRole(@Param("ROLE") String role);
 
 }
