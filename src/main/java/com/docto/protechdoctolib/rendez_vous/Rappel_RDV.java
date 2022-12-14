@@ -28,7 +28,7 @@ public class Rappel_RDV {
         List<Rendez_vous> list_RDV = rendez_vousDAO.findAll();
         //list_RDV.forEach(rdv -> {
         for (int i=0; i< list_RDV.size(); i++){
-            if((list_RDV.get(i).getDateDebut().isAfter(LocalDateTime.now().plus(Duration.ofHours(11)))) && (list_RDV.get(i).getDateDebut().isBefore(LocalDateTime.now().plus(Duration.ofHours(35))))){
+            if((list_RDV.get(i).getDateDebut().isAfter(LocalDateTime.now().plus(Duration.ofHours(12)))) && (list_RDV.get(i).getDateDebut().isBefore(LocalDateTime.now().plus(Duration.ofHours(36))))){
                 emailService.sendEmail((userRepository.findById(list_RDV.get(i).getIdUser())).get().getEmail(),
                         "Rappel de Rendez-vous avec la psychologue de l'école", "BLALALLA");
             }
