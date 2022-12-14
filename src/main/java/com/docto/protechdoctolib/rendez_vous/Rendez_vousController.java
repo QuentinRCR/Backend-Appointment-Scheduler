@@ -137,6 +137,12 @@ public class Rendez_vousController {
     public void deleteParId(@PathVariable Long id) {
         try{
             rendez_vousDAO.deleteById(id);
+            emailService.sendEmail("email de la psy",
+                    "Un rdv a été supprimé", buildEmailSuppressionPsy(
+                            userRepository.findById(rendez_vousDAO.findById(id).get().getIdUser()).get().getNom(),
+                    rendez_vousDAO.findById(id).get().getDateDebut(),
+                    rendez_vousDAO.findById(id).get().getMoyenCommunication())
+                    );
         }
         catch (EmptyResultDataAccessException e){
             throw new ResponseStatusException( //if not found, throw 404 error
@@ -199,10 +205,17 @@ public class Rendez_vousController {
             rendez_vous = rendez_vousDAO.save(new Rendez_vous(dto.getId(), creneauId ,dto.getIdUser(), dto.getDateDebut(), dto.getDuree(), dto.getMoyenCommunication(),dto.getZoomLink())); //Create new appointment
             //envoi mail de confirmation prise de rdv
             User user= userRepository.findById(dto.getIdUser()).get();
-            emailService.sendEmail(
+            emailService.sendEmail(             // Pour l'élève
                     user.getEmail(),
                     "Confirmation prise de rendez-vous",
                     buildEmailConfirmationRdv(user.getPrenom(), "link", dto.getDateDebut(),dto.getMoyenCommunication()));
+            if (auth.equals("USER")) {
+                emailService.sendEmail(             // Pour la psy
+                        "email de la psy",
+                        "Un rendez-vous a été pris",
+                        buildEmailConfirmationRdvPsy(user.getNom(), dto.getDateDebut(), dto.getMoyenCommunication()));
+            }
+
 
 
         } else {
@@ -215,12 +228,16 @@ public class Rendez_vousController {
             rendez_vous.setZoomLink(dto.getZoomLink());
             //envoi mail de modification de rdv
             User user= userRepository.findById(dto.getIdUser()).get();
-            emailService.sendEmail(
+            emailService.sendEmail(             // Pour l'élève
                     user.getEmail(),
                     "Modification de rendez-vous",
                     buildEmailModificationRdv(user.getPrenom(), "link", dto.getDateDebut(),dto.getMoyenCommunication()));
-
-
+            if (auth.equals("USER")) {
+                emailService.sendEmail(             // Pour la psy
+                        "email de la psy",
+                        "Un rendez-vous a été modifié",
+                        buildEmailConfirmationRdvPsy(user.getNom(), dto.getDateDebut(), dto.getMoyenCommunication()));
+            }
 
         }
         return new Rendez_vousDTO(rendez_vous);
@@ -995,5 +1012,13 @@ public class Rendez_vousController {
                 "    </table>\n" +
                 "  </body>\n" +
                 "</html>";
+    }
+
+    public String buildEmailConfirmationRdvPsy(String name, LocalDateTime date, String comm){
+        return "blabla";
+    }
+
+    public String buildEmailSuppressionPsy(String name, LocalDateTime date, String comm){
+        return "blablabla";
     }
 }
