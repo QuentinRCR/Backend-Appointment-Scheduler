@@ -137,12 +137,15 @@ public class Rendez_vousController {
     public void deleteParId(@PathVariable Long id) {
         try{
             rendez_vousDAO.deleteById(id);
-            emailService.sendEmail("email de la psy",
-                    "Un rdv a été supprimé", buildEmailSuppressionPsy(
-                            userRepository.findById(rendez_vousDAO.findById(id).get().getIdUser()).get().getNom(),
-                    rendez_vousDAO.findById(id).get().getDateDebut(),
-                    rendez_vousDAO.findById(id).get().getMoyenCommunication())
-                    );
+            List <User> Admins= userRepository.findByRole();
+            for (int i=0; i<Admins.size(); i++) {
+                emailService.sendEmail(Admins.get(i).getEmail(),
+                        "Un rdv a été supprimé", buildEmailSuppressionPsy(
+                                userRepository.findById(rendez_vousDAO.findById(id).get().getIdUser()).get().getNom(),
+                                rendez_vousDAO.findById(id).get().getDateDebut(),
+                                rendez_vousDAO.findById(id).get().getMoyenCommunication())
+                );
+            }
         }
         catch (EmptyResultDataAccessException e){
             throw new ResponseStatusException( //if not found, throw 404 error
@@ -210,10 +213,13 @@ public class Rendez_vousController {
                     "Confirmation prise de rendez-vous",
                     buildEmailConfirmationRdv(user.getPrenom(), "link", dto.getDateDebut(),dto.getMoyenCommunication()));
             if (auth.equals("USER")) {
-                emailService.sendEmail(             // Pour la psy
-                        "email de la psy",
-                        "Un rendez-vous a été pris",
-                        buildEmailConfirmationRdvPsy(user.getNom(), dto.getDateDebut(), dto.getMoyenCommunication()));
+                List<User> Admins = userRepository.findByRole();
+                for (int i = 0; i < Admins.size(); i++) {
+                    emailService.sendEmail(             // Pour la psy
+                            Admins.get(i).getEmail(),
+                            "Un rendez-vous a été pris",
+                            buildEmailConfirmationRdvPsy(user.getNom(), dto.getDateDebut(), dto.getMoyenCommunication()));
+                }
             }
 
 
@@ -233,10 +239,12 @@ public class Rendez_vousController {
                     "Modification de rendez-vous",
                     buildEmailModificationRdv(user.getPrenom(), "link", dto.getDateDebut(),dto.getMoyenCommunication()));
             if (auth.equals("USER")) {
-                emailService.sendEmail(             // Pour la psy
-                        "email de la psy",
-                        "Un rendez-vous a été modifié",
-                        buildEmailConfirmationRdvPsy(user.getNom(), dto.getDateDebut(), dto.getMoyenCommunication()));
+                List<User> Admins = userRepository.findByRole();
+                for (int i = 0; i < Admins.size(); i++) {
+                    emailService.sendEmail( Admins.get(i).getEmail(),            // Pour la psy
+                            "Un rendez-vous a été modifié",
+                            buildEmailModificationRdvPsy(user.getNom(), dto.getDateDebut(), dto.getMoyenCommunication()));
+                }
             }
 
         }
@@ -1015,6 +1023,10 @@ public class Rendez_vousController {
     }
 
     public String buildEmailConfirmationRdvPsy(String name, LocalDateTime date, String comm){
+        return "blabla";
+    }
+
+    public String buildEmailModificationRdvPsy(String name, LocalDateTime date, String comm){
         return "blabla";
     }
 
