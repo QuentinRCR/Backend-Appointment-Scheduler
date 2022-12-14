@@ -23,12 +23,12 @@ public class Rappel_RDV {
         this.emailService = emailService;
     }
 
-    @Scheduled(cron = "00 30 20 ? * * ")// Tous les jours à 20h30
+    @Scheduled(cron = "00 00 12 ? * * ")// Tous les jours à 12h
     public void rappel(){
         List<Rendez_vous> list_RDV = rendez_vousDAO.findAll();
         //list_RDV.forEach(rdv -> {
         for (int i=0; i< list_RDV.size(); i++){
-            if((list_RDV.get(i).getDateDebut().isAfter(LocalDateTime.now())) && (list_RDV.get(i).getDateDebut().isBefore(LocalDateTime.now().plus(Duration.ofHours(25))))){
+            if((list_RDV.get(i).getDateDebut().isAfter(LocalDateTime.now().plus(Duration.ofHours(11)))) && (list_RDV.get(i).getDateDebut().isBefore(LocalDateTime.now().plus(Duration.ofHours(35))))){
                 emailService.sendEmail((userRepository.findById(list_RDV.get(i).getIdUser())).get().getEmail(),
                         "Rappel de Rendez-vous avec la psychologue de l'école", "BLALALLA");
             }
