@@ -218,8 +218,8 @@ public class Rendez_vousController {
                 for (int i = 0; i < Admins.size(); i++) {
                     emailService.sendEmail(             // Pour la psy
                             Admins.get(i).getEmail(),
-                            "Un rendez-vous a été pris",
-                            buildEmailConfirmationRdvPsy(user.getNom(), user.getNom(), dto.getDateDebut(), dto.getMoyenCommunication(),"linkSite"));
+                            "Nouveau rendez-vous pour "+user.getPrenom()+" "+user.getNom(),
+                            buildEmailConfirmationRdvPsy(user.getNom(), user.getPrenom(), dto.getDateDebut(), dto.getMoyenCommunication(),"linkSite"));
                 }
             }
 
@@ -1214,7 +1214,7 @@ public class Rendez_vousController {
                 "                            <div class=\"détails_élément\">Moyen de communication:"+comm+"</div>\n" +
                 "                          </div>\n" +
                 "                        </div>\n" +
-                "                        <h2>Vous avez donc un rendez-vous avec "+firstname+" "+name+"le "+date.toLocalDate()+" à "+date.toLocalTime()+" sur "+comm+".</h2>\n" +
+                "                        <h2>Vous avez donc un rendez-vous avec "+firstname+" "+name+" le "+date.toLocalDate()+" à "+date.toLocalTime()+" sur "+comm+".</h2>\n" +
                 "                        <h2>Pour accéder à votre site de réservation, cliquez sur le lien ci-dessous:</h2>\n" +
                 "                        <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"btn btn-primary\">\n" +
                 "                          <tbody>\n" +
@@ -1685,7 +1685,7 @@ public class Rendez_vousController {
                 "                  <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\">\n" +
                 "                    <tr>\n" +
                 "                      <td>\n" +
-                "                        <h1>Nouveau rendez-vous pour "+ name +" "+ firstname +".</h1>\n" +
+                "                        <h1>Rendez-vous annulé par "+ name +" "+ firstname +".</h1>\n" +
                 "                        <h2>Bonjour, l'un de vos rendez-vous a été annulé. Voici les détails concernant ce dernier:</h2>\n" +
                 "                        <div class=\"card_container\">\n" +
                 "                          <div class=\"left_panel\"></div>\n" +
