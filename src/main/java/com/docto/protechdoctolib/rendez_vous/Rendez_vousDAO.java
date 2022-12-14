@@ -35,8 +35,8 @@ public interface Rendez_vousDAO extends JpaRepository<Rendez_vous, Long> {
     @Query("select c from Rendez_vous c where c.dateDebut=:dateDebut")  // (2)
     List<Rendez_vous> findByDateDebut(@Param("dateDebut") LocalDateTime dateDebut);
 
-    /*@Query(value = "select c.*, d.* from Rendez_vous c, Ruser d ")  // (2)
-    List<Rendez_vous> rappel(); */
+    @Query("select c from Rendez_vous c where c.dateDebut>=:datee")  // (2)
+    List<Rendez_vous> findRendez_vousAfterDate(@Param("datee") LocalDateTime datee);
 
 
     //"select c from Rendez_vous c where  c.date_debut>GETDATE(), nativeQuery = true"

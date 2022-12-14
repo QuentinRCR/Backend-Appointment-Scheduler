@@ -25,7 +25,7 @@ public class Rappel_RDV {
 
     @Scheduled(cron = "00 00 12 ? * * ")// Tous les jours à 12h
     public void rappel(){
-        List<Rendez_vous> list_RDV = rendez_vousDAO.findAll();
+        List<Rendez_vous> list_RDV = rendez_vousDAO.findRendez_vousAfterDate(LocalDateTime.now());
         //list_RDV.forEach(rdv -> {
         for (int i=0; i< list_RDV.size(); i++){
             if((list_RDV.get(i).getDateDebut().isAfter(LocalDateTime.now().plus(Duration.ofHours(12)))) && (list_RDV.get(i).getDateDebut().isBefore(LocalDateTime.now().plus(Duration.ofHours(36))))){
