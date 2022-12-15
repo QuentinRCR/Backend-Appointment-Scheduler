@@ -25,6 +25,12 @@ before_script:
 build:
   stage: build
   script: gradle --build-cache assemble -x checkstyleMain -x checkstyleTest
+  cache:
+    key: "$CI_COMMIT_REF_NAME"
+    policy: push
+    paths:
+      - build
+      - .gradle
 
 test:
   stage: test
