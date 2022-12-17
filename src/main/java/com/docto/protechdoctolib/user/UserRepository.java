@@ -1,6 +1,6 @@
 package com.docto.protechdoctolib.user;
 
-import com.docto.protechdoctolib.rendez_vous.Rendez_vous;
+
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
