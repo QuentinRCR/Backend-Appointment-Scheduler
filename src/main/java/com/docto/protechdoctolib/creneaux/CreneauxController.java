@@ -47,6 +47,9 @@ public class CreneauxController {
     public List<CreneauxDTO> findAll() {
         logger.info("la fonction findAll à été utilisé");
         List<Creneaux> listCreneau= creneauxDAO.findAll();
+        if(listCreneau.size()==0){
+            logger.debug("La liste de créneaux renvoyés par findAll est vide");
+        }
         return listCreneau.subList(0,Integer.min(30,listCreneau.size())).stream().map(CreneauxDTO::new).collect(Collectors.toList()); //the subList is to avoid loading useless slots
     }
 
@@ -61,6 +64,7 @@ public class CreneauxController {
         logger.info("la fonction findById à été utilisé avec l'id " + id.toString());
         CreneauxDTO creneauId = creneauxDAO.findById(id).map(CreneauxDTO::new).orElse(null);
         if (creneauId == null) {
+            logger.error("id créneau non trouvé dans finById");
             throw new ResponseStatusException( //if not found throw 404 error
                     HttpStatus.NOT_FOUND, "entity not found"
             );
