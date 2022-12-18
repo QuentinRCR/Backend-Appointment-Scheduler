@@ -4,8 +4,10 @@ package com.docto.protechdoctolib.security.config;
 import com.docto.protechdoctolib.filter.CustomAuthenticationFilter;
 import com.docto.protechdoctolib.filter.CustomAuthorizationFilter;
 import com.docto.protechdoctolib.user.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
@@ -32,6 +34,9 @@ public class WebSecurityConfig {
     private final UserService userService;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final AuthenticationConfiguration authenticationConfiguration;
+
+    @Autowired
+    private Environment environment;
 
     public WebSecurityConfig(UserService userService, BCryptPasswordEncoder bCryptPasswordEncoder, AuthenticationConfiguration authenticationConfiguration) {
         this.userService = userService;
@@ -84,7 +89,7 @@ public class WebSecurityConfig {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173"));
+        configuration.setAllowedOrigins(Arrays.asList(environment.getProperty("frontend.url")));
         configuration.setAllowedMethods(Arrays.asList("*"));
         configuration.setAllowedHeaders(List.of("Content-Type","AUTHORIZATION")); //"Access-Control-Allow-Headers", "Authorization"
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

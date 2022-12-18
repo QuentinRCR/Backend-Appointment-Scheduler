@@ -11,6 +11,8 @@ import com.docto.protechdoctolib.user.UserRepository;
 import com.docto.protechdoctolib.user.UserRole;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -31,6 +33,9 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 @RequestMapping("/api/rendez_vous") // (2)
 @Transactional // (3)
 public class Rendez_vousController {
+
+    @Autowired
+    private Environment environment;
 
     private final CreneauxDAO creneauxDAO;
     private final Rendez_vousDAO rendez_vousDAO;
@@ -145,7 +150,7 @@ public class Rendez_vousController {
                                 user.getPrenom(),
                                 rendez_vousDAO.findById(id).get().getDateDebut(),
                                 rendez_vousDAO.findById(id).get().getMoyenCommunication(),
-                                "linkSite")
+                                environment.getProperty("frontend.url"))
                 );
             }
         }
@@ -213,7 +218,7 @@ public class Rendez_vousController {
             emailService.sendEmail(             // Pour l'élève
                     user.getEmail(),
                     "Confirmation prise de rendez-vous",
-                    buildEmailConfirmationRdv(user.getPrenom(), "link", dto.getDateDebut(),dto.getMoyenCommunication()));
+                    buildEmailConfirmationRdv(user.getPrenom(), environment.getProperty("frontend.url"), dto.getDateDebut(),dto.getMoyenCommunication()));
             if (auth.equals("USER")) {
                 List<User> Admins = userRepository.findByRole(UserRole.ADMIN);
                 for (int i = 0; i < Admins.size(); i++) {
@@ -240,7 +245,7 @@ public class Rendez_vousController {
             emailService.sendEmail(             // Pour l'élève
                     user.getEmail(),
                     "Modification de rendez-vous",
-                    buildEmailModificationRdv(user.getPrenom(), "link", dto.getDateDebut(),dto.getMoyenCommunication()));
+                    buildEmailModificationRdv(user.getPrenom(), environment.getProperty("frontend.url"), dto.getDateDebut(),dto.getMoyenCommunication()));
             if (auth.equals("USER")) {
                 List<User> Admins = userRepository.findByRole(UserRole.ADMIN);
                 for (int i = 0; i < Admins.size(); i++) {

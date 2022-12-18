@@ -4,6 +4,8 @@ import com.docto.protechdoctolib.email.EmailService;
 import com.docto.protechdoctolib.registration.token.ConfirmationToken;
 import com.docto.protechdoctolib.registration.token.ConfirmationTokenService;
 import com.docto.protechdoctolib.user.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +20,9 @@ public class ForgottenPasswordService {
 
     private final ConfirmationTokenService confirmationTokenService;
 
+    @Autowired
+    private Environment environment;
+
     public ForgottenPasswordService(UserRepository userRepository, EmailService emailService, ConfirmationTokenService confirmationTokenService) {
         this.userRepository = userRepository;
         this.emailService = emailService;
@@ -30,7 +35,7 @@ public class ForgottenPasswordService {
             String token = UUID.randomUUID().toString();
 
 
-            String link="http://localhost:5173/formChangedPassword?token=" + token;
+            String link=environment.getProperty("frontend.url")+"/formChangedPassword?token=" + token;
             ConfirmationToken confirmationToken = new ConfirmationToken(
                     token,
                     LocalDateTime.now(),

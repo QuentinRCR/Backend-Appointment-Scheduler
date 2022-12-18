@@ -11,6 +11,8 @@ import com.docto.protechdoctolib.user.User;
 import com.docto.protechdoctolib.user.UserRepository;
 import com.docto.protechdoctolib.user.UserRole;
 import com.docto.protechdoctolib.user.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +28,9 @@ public class RegistrationService {
     private final UserService userService;
     private final ConfirmationTokenService confirmationTokenService;
     private final EmailService emailService;
+
+    @Autowired
+    private Environment environment; //to get environment variables
 
 
     public RegistrationService(EmailValidator emailValidator, UserService userService, ConfirmationTokenService confirmationTokenService,/*, EmailSender emailSender*/EmailService emailSender, EmailService emailService, CleanRepository cleanRepository, UserRepository userRepository, ConfirmationTokenRepository confirmationTokenRepository, Rendez_vousDAO rendez_vousDAO) {
@@ -55,7 +60,7 @@ public class RegistrationService {
                         request.getSkypeAccount(),
                         request.getCampus()
                 ));
-        String link = "http://localhost:8080/api/registration/confirm?token=" + token;
+        String link = environment.getProperty("backend.url")+"/api/registration/confirm?token=" + token;
         emailService.sendEmail(
                 request.getEmail(),
                 "Lien d'activation de votre compte",

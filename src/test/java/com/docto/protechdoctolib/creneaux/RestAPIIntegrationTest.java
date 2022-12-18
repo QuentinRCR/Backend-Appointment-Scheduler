@@ -22,6 +22,13 @@ import org.assertj.core.api.Assertions;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.core.env.Environment;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -30,7 +37,11 @@ import java.util.List;
 /**
  * Test d'intégration de l'API créneau
  */
+@SpringBootTest
 public class RestAPIIntegrationTest {
+
+    @Autowired
+    private Environment environment;
 
     /**
      * Test que si on rentre de bons identifiants pour l'api de login, elle nous renvoie un token
@@ -43,7 +54,7 @@ public class RestAPIIntegrationTest {
         HttpClient httpclient = HttpClients.createDefault();
 
         //Create the request
-        HttpPost httppost = new HttpPost("http://localhost:8080/api/login");
+        HttpPost httppost = new HttpPost(environment.getProperty("backend.url")+"/api/login");
         List<NameValuePair> params = new ArrayList<NameValuePair>(2);
         params.add(new BasicNameValuePair("email", "admin@gmail.com"));
         params.add(new BasicNameValuePair("password", "admin"));
@@ -75,7 +86,7 @@ public class RestAPIIntegrationTest {
         String access_token = this.getTokenFromEmailAndPassword("admin@gmail.com", "admin");
 
         //Create the request
-        HttpUriRequest request = new HttpGet("http://localhost:8080/api/creneaux/user/20");
+        HttpUriRequest request = new HttpGet(environment.getProperty("backend.url")+"/api/creneaux/user/20");
         request.setHeader("AUTHORIZATION", "Bearer " + access_token);
 
         // Execute it
@@ -99,7 +110,7 @@ public class RestAPIIntegrationTest {
         String access_token = this.getTokenFromEmailAndPassword("user@gmail.com", "user");
 
         //Create the request
-        HttpUriRequest request = new HttpDelete("http://localhost:8080/api/creneaux/admin/-1");
+        HttpUriRequest request = new HttpDelete(environment.getProperty("backend.url")+"/api/creneaux/admin/-1");
         request.setHeader("AUTHORIZATION", "Bearer " + access_token);
 
         // Execute it
@@ -125,7 +136,7 @@ public class RestAPIIntegrationTest {
 
         // Given
         String jsonMimeType = "application/json";
-        HttpUriRequest request = new HttpGet("http://localhost:8080/api/creneaux/user/20");
+        HttpUriRequest request = new HttpGet(environment.getProperty("backend.url")+"/api/creneaux/user/20");
         request.setHeader("AUTHORIZATION", "Bearer " + access_token);
         // When
         HttpResponse response = HttpClientBuilder.create().build().execute(request);
@@ -148,7 +159,7 @@ public class RestAPIIntegrationTest {
 
         String access_token = this.getTokenFromEmailAndPassword("admin@gmail.com", "admin");
 
-        HttpUriRequest request = new HttpGet("http://localhost:8080/api/creneaux/user/-1"); //create the request
+        HttpUriRequest request = new HttpGet(environment.getProperty("backend.url")+"/api/creneaux/user/-1"); //create the request
         request.setHeader("AUTHORIZATION", "Bearer " + access_token);
         // When
         HttpResponse response = HttpClientBuilder.create().build().execute(request); //execute the request
@@ -176,7 +187,7 @@ public class RestAPIIntegrationTest {
         HttpClient httpclient = HttpClients.createDefault();
 
         //Create the request
-        HttpPost httppost = new HttpPost("http://localhost:8080/api/login");
+        HttpPost httppost = new HttpPost(environment.getProperty("backend.url")+"/api/login");
         List<NameValuePair> params = new ArrayList<NameValuePair>(2);
         params.add(new BasicNameValuePair("email", email));
         params.add(new BasicNameValuePair("password", password));
