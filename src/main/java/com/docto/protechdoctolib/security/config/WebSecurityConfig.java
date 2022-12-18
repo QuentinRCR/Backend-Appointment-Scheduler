@@ -68,6 +68,9 @@ public class WebSecurityConfig {
         http.authorizeRequests().antMatchers(DELETE,"/api/users/user/**").hasAnyAuthority("ADMIN","USER");
         http.authorizeRequests().antMatchers(GET,"/api/users/admin/**").hasAnyAuthority("ADMIN");
 
+        http.authorizeRequests().antMatchers(POST,"/api/communicationMean/admin/**").hasAnyAuthority("ADMIN");
+        http.authorizeRequests().antMatchers(DELETE,"/api/communicationMean/admin/**").hasAnyAuthority("ADMIN");
+        http.authorizeRequests().antMatchers(GET,"/api/communicationMean/user/**").hasAnyAuthority("USER","ADMIN");
 
         http.authorizeRequests().anyRequest().authenticated();
         http.formLogin();

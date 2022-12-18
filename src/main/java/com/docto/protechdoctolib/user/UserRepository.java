@@ -1,6 +1,6 @@
 package com.docto.protechdoctolib.user;
 
-import com.docto.protechdoctolib.rendez_vous.Rendez_vous;
+
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -31,7 +31,10 @@ public interface UserRepository extends JpaRepository<User, Long> {
             "SET u.enabled = TRUE WHERE u.email = ?1")
     int enableUser(String email);
 
-    @Query("select u from User u where u.user_role=:ROLE")  // (2)
-    List<User> findByRole(@Param("ROLE") String role);
+    @Query("select u from User u where  u.user_role=:ROLE")
+    List<User> findByRole(@Param("ROLE") UserRole ROLE);
+
+    @Query("select u from User u order by lower(u.nom) asc")
+    List<User> findAll();
 
 }

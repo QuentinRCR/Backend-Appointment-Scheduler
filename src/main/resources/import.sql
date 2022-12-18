@@ -17,3 +17,7 @@ INSERT INTO RENDEZ_VOUS(id,date_Debut, id_User, id_Creneau,duree, moyen_Communic
 INSERT INTO RENDEZ_VOUS(id,date_Debut, id_User, id_Creneau,duree, moyen_Communication, zoom_Link) VALUES(-2,{ts '2022-09-16 00:00:00.00'},-10, -2,50,'zoom','link.fr');
 INSERT INTO RENDEZ_VOUS(id,date_Debut, id_User, id_Creneau,duree, moyen_Communication, zoom_Link) VALUES(-3,{ts '2022-09-16 00:00:00.00'}, -10, -2,50,'zoom','link.fr');
 
+--- Moyen de communication
+INSERT INTO COMMUNICATION_MEANS(COMMUNICATION_MEAN) VALUES('Téléphone');
+INSERT INTO COMMUNICATION_MEANS(COMMUNICATION_MEAN) VALUES('Skype');
+INSERT INTO COMMUNICATION_MEANS(COMMUNICATION_MEAN) VALUES('WhatsApp');
