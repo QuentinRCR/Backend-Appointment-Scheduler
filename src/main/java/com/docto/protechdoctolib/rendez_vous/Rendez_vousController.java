@@ -240,6 +240,7 @@ public class Rendez_vousController {
             rendez_vous.setDuree(dto.getDuree()); /*use a duration using format "PT60S" or "PT2M"...*/
             rendez_vous.setMoyenCommunication(dto.getMoyenCommunication());
             rendez_vous.setZoomLink(dto.getZoomLink());
+
             //envoi mail de modification de rdv
             User user= userRepository.findById(dto.getIdUser()).get();
             emailService.sendEmail(             // Pour l'élève
