@@ -12,7 +12,7 @@ import java.util.List;
 @Entity
 public class Creneaux {
 
-    public Creneaux() { ///dfsd
+    public Creneaux() {
     }
 
     public Creneaux(Long id, LocalDate dateDebut, LocalDate dateFin, List<DayOfWeek> jours, List<HeuresDebutFin> heuresDebutFin) {
