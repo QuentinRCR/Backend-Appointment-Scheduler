@@ -22,25 +22,25 @@ public class Rendez_vousDAOtest {
     /**
      * Teste si le rdv -1 contient bien les bonnes informations
      */
-    @Test
-    public void shouldFindARdv() {
-        Rendez_vous rendez_vous = rendez_vousDAO.getReferenceById(-1L); //rendez_vousDAO.getReferenceById(-2L);
-        LocalDateTime dateDebut = LocalDateTime.of(2022, 10, 16, 0, 0, 0);
-        Long idUser = Long.valueOf(-11);
-        Long idCreneau = Long.valueOf(-1);
-        Duration duree = Duration.ofSeconds(4);
-        String moyenComm = String.valueOf("zoom");
-        String zoomLink = String.valueOf("link.fr");
-        Rendez_vous rdvTest = new Rendez_vous(-1L, idCreneau, idUser, dateDebut, duree, moyenComm, zoomLink);
-        Assertions.assertThat(rendez_vous.getDateDebut()).isEqualTo(rdvTest.getDateDebut());
-        Assertions.assertThat(rendez_vous.getIdCreneau()).isEqualTo(rdvTest.getIdCreneau());
-        Assertions.assertThat(rendez_vous.getIdUser()).isEqualTo(rdvTest.getIdUser());
-        Assertions.assertThat(rendez_vous.getMoyenCommunication()).isEqualTo(rdvTest.getMoyenCommunication());
-        Assertions.assertThat(rendez_vous.getZoomLink()).isEqualTo(rdvTest.getZoomLink());
-        Assertions.assertThat(rendez_vous.getDuree()).isEqualTo(rdvTest.getDuree());
-
-
-    }
+//    @Test
+//    public void shouldFindARdv() {
+//        Rendez_vous rendez_vous = rendez_vousDAO.getReferenceById(-1L); //rendez_vousDAO.getReferenceById(-2L);
+//        LocalDateTime dateDebut = LocalDateTime.of(2022, 10, 16, 0, 0, 0);
+//        Long idUser = Long.valueOf(-11);
+//        Long idCreneau = Long.valueOf(-1);
+//        Duration duree = Duration.ofSeconds(4);
+//        String moyenComm = String.valueOf("zoom");
+//        String zoomLink = String.valueOf("link.fr");
+//        Rendez_vous rdvTest = new Rendez_vous(-1L, idCreneau, idUser, dateDebut, duree, moyenComm, zoomLink);
+//        Assertions.assertThat(rendez_vous.getDateDebut()).isEqualTo(rdvTest.getDateDebut());
+//        Assertions.assertThat(rendez_vous.getIdCreneau()).isEqualTo(rdvTest.getIdCreneau());
+//        Assertions.assertThat(rendez_vous.getIdUser()).isEqualTo(rdvTest.getIdUser());
+//        Assertions.assertThat(rendez_vous.getMoyenCommunication()).isEqualTo(rdvTest.getMoyenCommunication());
+//        Assertions.assertThat(rendez_vous.getZoomLink()).isEqualTo(rdvTest.getZoomLink());
+//        Assertions.assertThat(rendez_vous.getDuree()).isEqualTo(rdvTest.getDuree());
+//
+//
+//    }
 
     /**
      * Teste si la liste de rdv retournée a bien une taille de 3 comme dans le import.sql

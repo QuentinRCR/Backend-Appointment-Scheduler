@@ -2,7 +2,7 @@ plugins {
 	id 'org.springframework.boot' version '2.7.4'
 	id 'io.spring.dependency-management' version '1.0.14.RELEASE'
 	id 'java'
-	id 'checkstyle' //Pour avoir de l'analyse static
+	//id 'checkstyle' //Pour avoir de l'analyse static
 	//id 'war' //pour pouvoir package l'application en un fichier .war pour la déployer sur un serveur
 }
 
