@@ -25,8 +25,8 @@ jobs:
       with:
         arguments: build
 
-    - name: generate-changelog-action #create the changelog
-      uses: ScottBrenner/generate-changelog-action@v1.3.3
+    - name: "✏️ Generate release changelog"
+      uses: heinrichreimer/github-changelog-generator-action@v2.3
 
     - name: Create Release
       uses: ncipollo/release-action@v1.12.0
