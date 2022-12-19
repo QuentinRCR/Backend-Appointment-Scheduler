@@ -25,11 +25,11 @@ jobs:
       with:
         arguments: build
 
-    - name: generate-changelog-action #create the changelog
-      uses: ScottBrenner/generate-changelog-action@v1.3.3
-      with:
-        from-tag: v1.0
-        to-tag: HEAD
+    - name: Changelog
+      uses: Bullrich/generate-release-changelog@master
+      id: Changelog
+      env:
+        REPO: ${{ github.repository }}
 
     - name: Create Release
       uses: ncipollo/release-action@v1.12.0
