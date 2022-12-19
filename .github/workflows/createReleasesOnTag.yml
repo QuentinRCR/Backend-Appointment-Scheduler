@@ -35,4 +35,6 @@ jobs:
       uses: ncipollo/release-action@v1.12.0
       with:
         artifacts: "build/libs/protech-doctolib-0.0.1-SNAPSHOT-javadoc.jar,build/libs/protech-doctolib-0.0.1-SNAPSHOT-sources.jar"
-
+        generateReleaseNotes: true
+        body: |
+          ${{ steps.Changelog.outputs.changelog }}
