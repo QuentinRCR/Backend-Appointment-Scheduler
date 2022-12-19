@@ -25,7 +25,7 @@ jobs:
       with:
         arguments: build
 
-    - name: generate-changelog-action
+    - name: generate-changelog-action #create the changelog
       uses: ScottBrenner/generate-changelog-action@v1.3.3
 
     - name: Create Release
