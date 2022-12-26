@@ -38,7 +38,7 @@ public interface Rendez_vousDAO extends JpaRepository<Rendez_vous, Long> {
     @Query("select c from Rendez_vous c where c.dateDebut>=:datee")  // (2)
     List<Rendez_vous> findRendez_vousAfterDate(@Param("datee") LocalDateTime datee);
 
-    @Query("select c from Rendez_vous c ")
-    List<Rendez_vous> export();
+    @Query("select c from Rendez_vous c where c.dateDebut>=:startDate and c.dateDebut<=:endDate")
+    List<Rendez_vous> export(@Param("startDate") LocalDateTime startDate,@Param("endDate") LocalDateTime endDate);
 
 }
