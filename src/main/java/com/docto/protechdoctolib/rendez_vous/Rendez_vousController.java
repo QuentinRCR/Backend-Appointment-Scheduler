@@ -13,16 +13,31 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.repository.query.Param;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
+import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -259,6 +274,31 @@ public class Rendez_vousController {
         }
         return new Rendez_vousDTO(rendez_vous);
     }
+
+
+    /**
+     * Crée le document Excel avec les rendez-vous et le rend disponible au téléchargement
+     * @param startDate
+     * @param endDate
+     * @return
+     * @throws IOException
+     */
+    @GetMapping("/downloadFile/{startDate}/{endDate}")
+    public ResponseEntity<?> downloadFile(@PathVariable("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate, @PathVariable("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) throws IOException {
+            String absolutePath= Export_excel.export(rendez_vousDAO,userRepository,startDate,endDate); //export appointements to excel
+
+            // transform the path to a ressource
+            Path path = Paths.get(absolutePath);
+            ByteArrayResource resource = new ByteArrayResource(Files.readAllBytes(path));
+
+            String contentType = "application/octet-stream";
+            String headerValue = "attachment; filename=RecapRDVDu"+startDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))+"Au"+startDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))+".xlsx"; //explains the name for the file
+            return ResponseEntity.ok()
+                            .contentType(MediaType.parseMediaType(contentType))
+                            .header(HttpHeaders.CONTENT_DISPOSITION, headerValue)
+                            .body(resource);
+    }
+
 
 
     /**
