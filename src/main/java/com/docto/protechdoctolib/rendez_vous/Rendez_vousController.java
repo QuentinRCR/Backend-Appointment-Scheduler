@@ -155,16 +155,17 @@ public class Rendez_vousController {
     @DeleteMapping(path = "/user/{id}")
     public void deleteParId(@PathVariable Long id) {
         try{
+            User user=userRepository.findById(rendez_vousDAO.findById(id).get().getIdUser()).get();
+            Rendez_vous deletedApp=rendez_vousDAO.findById(id).get();
             rendez_vousDAO.deleteById(id);
             List <User> Admins= userRepository.findByRole(UserRole.ADMIN);
-            User user=userRepository.findById(rendez_vousDAO.findById(id).get().getIdUser()).get();
             for (int i=0; i<Admins.size(); i++) {
                 emailService.sendEmail(Admins.get(i).getEmail(),
                         "Annulation rendez-vous "+user.getNom()+" "+user.getPrenom()+".", buildEmailSuppressionPsy(
                                 user.getNom(),
                                 user.getPrenom(),
-                                rendez_vousDAO.findById(id).get().getDateDebut(),
-                                rendez_vousDAO.findById(id).get().getMoyenCommunication(),
+                                deletedApp.getDateDebut(),
+                                deletedApp.getMoyenCommunication(),
                                 environment.getProperty("frontend.url"))
                 );
             }
@@ -294,7 +295,7 @@ public class Rendez_vousController {
             String contentType = "application/octet-stream";
             String headerValue = "attachment; filename=RecapRDVDu"+startDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))+"Au"+startDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))+".xlsx"; //explains the name for the file
             return ResponseEntity.ok()
-                            .contentType(MediaType.parseMediaType(contentType))
+                            .contentType(MediaType.APPLICATION_OCTET_STREAM)
                             .header(HttpHeaders.CONTENT_DISPOSITION, headerValue)
                             .body(resource);
     }
@@ -328,7 +329,7 @@ public class Rendez_vousController {
             if (
                     (creneau.getJours().contains(dateDebutRDV.getDayOfWeek())) && //check that the day match one of the registered days
                             ((dateDebutRDV.toLocalDate().isAfter(creneau.getDateDebut())) || (dateDebutRDV.toLocalDate().equals(creneau.getDateDebut()))) && //Check that the stating date in within the slot
-                            ((dateFinRDV.toLocalDate().isBefore(creneau.getDateFin())) || (dateDebutRDV.toLocalDate().equals(creneau.getDateDebut()))) //Check that the ending date in within the slot
+                            ((dateFinRDV.toLocalDate().isBefore(creneau.getDateFin())) || (dateDebutRDV.toLocalDate().equals(creneau.getDateFin()))) //Check that the ending date in within the slot
             ){
                 for (HeuresDebutFin plage:creneau.getHeuresDebutFin()){
                     if (

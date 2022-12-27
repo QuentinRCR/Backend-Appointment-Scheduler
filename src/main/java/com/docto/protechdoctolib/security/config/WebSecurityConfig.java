@@ -77,7 +77,7 @@ public class WebSecurityConfig {
         http.authorizeRequests().antMatchers(DELETE,"/api/communicationMean/admin/**").hasAnyAuthority("ADMIN");
         http.authorizeRequests().antMatchers(GET,"/api/communicationMean/user/**").hasAnyAuthority("USER","ADMIN");
 
-        http.authorizeRequests().anyRequest().authenticated();
+        http.authorizeRequests().anyRequest().permitAll();
         http.formLogin();
         http.addFilter(customAuthenticationFilter);
         http.addFilterBefore(new CustomAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
