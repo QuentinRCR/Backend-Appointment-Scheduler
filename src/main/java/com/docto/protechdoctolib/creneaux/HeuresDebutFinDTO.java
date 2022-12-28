@@ -2,6 +2,9 @@ package com.docto.protechdoctolib.creneaux;
 
 import java.time.LocalTime;
 
+/**
+ * Sert à sérialiser et désérialiser l'objet HeureDebutFin
+ */
 public class HeuresDebutFinDTO {
 
     public HeuresDebutFinDTO() {

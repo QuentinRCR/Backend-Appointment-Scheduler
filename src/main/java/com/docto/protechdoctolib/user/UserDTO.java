@@ -2,6 +2,9 @@ package com.docto.protechdoctolib.user;
 
 import javax.persistence.*;
 
+/**
+ * Sert à sérialiser et désérialiser l'objet User
+ */
 public class UserDTO {
     private Long Id;
 

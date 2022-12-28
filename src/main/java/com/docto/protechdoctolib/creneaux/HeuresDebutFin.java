@@ -6,7 +6,7 @@ import javax.persistence.*;
 import java.time.LocalTime;
 
 /**
- * Définit une plage de temps dans une journée (ex: entre 8h et 12h)
+ * Modèle définissant une plage de temps dans une journée (ex: entre 8h et 12h). Ce modèle est utilisé par l'objet Créneau dans le but de pouvoir avoir plusieurs plages horaires dans un créneau
  */
 @Entity
 public class HeuresDebutFin {

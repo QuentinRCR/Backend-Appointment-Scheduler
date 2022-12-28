@@ -6,6 +6,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Sert à sérialiser et désérialiser l'objet Créneaux
+ */
 public class CreneauxDTO {
 
     private Long id;

@@ -9,6 +9,9 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.List;
 
+/**
+ * Modèle définissant les attributs d'un Créneau
+ */
 @Entity
 public class Creneaux {
 

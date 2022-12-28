@@ -3,6 +3,9 @@ package com.docto.protechdoctolib.communicationMeans;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
+/**
+ * Modèle définissant les moyens de communications par lesquels la psy et les patients peuvent communiquer
+ */
 @Entity
 public class CommunicationMeans {
 

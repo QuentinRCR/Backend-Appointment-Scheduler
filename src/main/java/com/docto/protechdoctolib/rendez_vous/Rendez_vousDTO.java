@@ -5,6 +5,9 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * Sert à sérialiser et désérialiser l'objet Rendez_vous
+ */
 public class Rendez_vousDTO {
 
     private Long id;

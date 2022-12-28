@@ -1,5 +1,8 @@
 package com.docto.protechdoctolib.communicationMeans;
 
+/**
+ * Sert à sérialiser et désérialiser l'objet CommunicationMeans
+ */
 public class CommunicationMeanDTO {
 
     private String communicationMean;
