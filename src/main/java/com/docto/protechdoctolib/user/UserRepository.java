@@ -20,23 +20,35 @@ import java.util.Optional;
 @Repository
 @Transactional(readOnly=true)
 public interface UserRepository extends JpaRepository<User, Long> {
+    /**
+     * Renvoie l'utilisateur correspondant à l'email envoyé
+     * @param email
+     * @return l'utilisateur correspondant à l'email envoyé
+     */
     Optional<User> findByEmail(String email);
 
-    /** Active le compte de l'utilisateur quande celui ci va faire une requête GET à l'API
-     * avec le token de confirmation qu'il reçoit lorsqu'il poste une reqête d'inscription
-     * Cette reqûete GET se fera par la suite en cliquant sur un lien de confirmation d'email
-     * mais le système d'envoi de mail n'est pas envore configuré
-     */
 
+    /** Active le compte de l'utilisateur quand celui-ci va fait une requête GET à l'API
+     * avec le token de confirmation qu'il reçoit lorsqu'il poste une requête d'inscription.
+     */
     @Transactional
     @Modifying
     @Query("UPDATE User u " +
             "SET u.enabled = TRUE WHERE u.email = ?1")
     int enableUser(String email);
 
+    /**
+     * Renvoie tous les utilisateurs qui ont le role fournis en paramètre
+     * @param ROLE
+     * @return tous les utilisateurs qui ont le role fournis en paramètre
+     */
     @Query("select u from User u where  u.user_role=:ROLE")
     List<User> findByRole(@Param("ROLE") UserRole ROLE);
 
+    /**
+     * Renvoie tous les utilisateurs par ordre alphabétique de nom de famille
+     * @return tous les utilisateurs par ordre alphabétique de nom de famille
+     */
     @Query("select u from User u order by lower(u.nom) asc")
     List<User> findAll();
 

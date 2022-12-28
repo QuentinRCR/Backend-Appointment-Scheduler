@@ -33,11 +33,15 @@ public class User implements UserDetails {
     @Column
     private String skypeAccount;
 
+    /**
+     * Campus sur lequel l'étudiant étudie
+     */
     @Column
     private String campus;
 
     @Enumerated(EnumType.STRING)
     private UserRole user_role;
+
     /**
      * La fonctionnalité locked n'est pas utilisé dans le projet ici mais permettrait de bloquer un compte
      * après des tentatives de mdp échouées répétées par exemple

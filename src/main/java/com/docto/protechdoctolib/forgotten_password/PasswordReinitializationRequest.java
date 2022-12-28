@@ -1,5 +1,8 @@
 package com.docto.protechdoctolib.forgotten_password;
 
+/**
+ * Model pour la requête de réinitialisation du mot de passe
+ */
 public class PasswordReinitializationRequest {
 
     String password;

@@ -48,7 +48,7 @@ public class UserController {
     }
 
     /**
-     * Donne la liste de tous les utilisateurs
+     * Renvoie la liste de tous les utilisateurs
      *
      * @return une liste de tous les créneaux
      */
@@ -58,7 +58,7 @@ public class UserController {
     }
 
     /**
-     * Renvoi toutes les infos utiles au front-end en récupérant l'id dans le header
+     * Renvoie les infos de l'utilisateur qui fait la request.
      * @return
      */
     @GetMapping(path = "/user/getbyId")
@@ -70,6 +70,7 @@ public class UserController {
         DecodedJWT decodedJWT = verifier.verify(acces_token);
         Long id= Long.parseLong(decodedJWT.getKeyId());
 
+        //get the data of the user
         UserDTO userDTO = userDAO.findById(id).map(UserDTO::new).orElse(null);
         if (userDTO == null) {
             throw new ResponseStatusException( //if not found throw 404 error
@@ -82,7 +83,7 @@ public class UserController {
     }
 
     /**
-     * Give user infos by id
+     * Renvoi les infomations sur l'utilisateur dont l'identifiant est fournie.
      * @param id
      * @return
      */
@@ -101,11 +102,12 @@ public class UserController {
 
 
     /**
-     * Delete all user information, activation token and appointements taken by the user making the request
+     * Supprime toutes les information de l'utilisateur qui fait la request. Cela comprend les informations personnels mais aussi les tokens d'activations et les rendez-vous.
      * @param request
      */
     @DeleteMapping("/user")
     public void deleteParId(HttpServletRequest request) {
+
         //get the id of the person making the request
         String acces_token = request.getHeader(AUTHORIZATION).substring("Bearer ".length());
         Algorithm algorithm = Algorithm.HMAC256("secret".getBytes());
@@ -113,20 +115,30 @@ public class UserController {
         DecodedJWT decodedJWT = verifier.verify(acces_token);
         Long id= Long.parseLong(decodedJWT.getKeyId());
 
-        List<ConfirmationToken> aa= confirmationTokenRepository.findCrenauxByUserId(id); //get all confirmation tokens related to the user
-        List<Rendez_vous> bb = rendez_vousDAO.findAllByIdUser(id); //get all appointments related to the user
-        for (int j=0; j<bb.size();j++){ //delete each appointements
+        //get all confirmation tokens related to the user
+        List<ConfirmationToken> aa= confirmationTokenRepository.findCrenauxByUserId(id);
+        //get all appointments related to the user
+        List<Rendez_vous> bb = rendez_vousDAO.findAllByIdUser(id);
+        //delete each appointements
+        for (int j=0; j<bb.size();j++){
             rendez_vousDAO.deleteById(bb.get(j).getId());
         }
-        for (int j=0; j<aa.size();j++){ //delete each confirmation token
+        //delete each confirmation token
+        for (int j=0; j<aa.size();j++){
             confirmationTokenRepository.deleteById(aa.get(j).getId());
         }
 
-        userDAO.deleteById(id); //delete the user
-
+        //delete the user
+        userDAO.deleteById(id);
     }
 
-    @GetMapping(path = "/user/submit/{id}")
+    /**
+     * Renvoie les informations de l'utilisateur ayant l'identifiant fournit
+     * @param id
+     * @param request
+     * @return
+     */
+    @GetMapping(path = "/admin/submit/{id}")
     public UserDTO findByIdSubmited(@PathVariable Long id,HttpServletRequest request) {
         UserDTO userDTO = userDAO.findById(id).map(UserDTO::new).orElse(null);
         if (userDTO == null) {
@@ -141,16 +153,16 @@ public class UserController {
 
 
     /**
-     * Prend un dto de User en paramètre,et modifier l'utilisateur en question avec les paramètres
+     * Modifier les informations de l'utilisateur faisant la request avec celles qui sont fournies.
      *
      * @param dto
-     * @return le dto du créneau crée
+     * @return l'utilisateur modifié
      */
     @PostMapping("/user/modify") // (8)
     public UserDTO modify(@RequestBody UserDTO dto, HttpServletRequest request) {
         User user = null;
 
-        //Get the correct userid
+        //Get the user id from the header
         String acces_token = request.getHeader(AUTHORIZATION).substring("Bearer ".length());
         Algorithm algorithm = Algorithm.HMAC256("secret".getBytes());
         JWTVerifier verifier = JWT.require(algorithm).build();
@@ -168,7 +180,7 @@ public class UserController {
                 user.setPassword(bCryptPasswordEncoder.encode(dto.getPassword()));
             }
 
-        } catch (EntityNotFoundException e) { //if slot not found, throw 404 error
+        } catch (EntityNotFoundException e) { //if user not found, throw 404 error
             throw new ResponseStatusException(
                     HttpStatus.NOT_FOUND, "user id not found"
             );

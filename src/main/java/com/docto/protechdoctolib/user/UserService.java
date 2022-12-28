@@ -16,6 +16,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Fait des actions sur des Users
+ */
 @Service @Transactional @Slf4j
 public class UserService implements UserDetailsService {
 
@@ -46,7 +49,7 @@ public class UserService implements UserDetailsService {
 
     /** Fonction d'inscription
      * si l'email de la requête n'a pas déjà été pris par un autre utilisateur
-     * Le mdp est crypté, l'utilisteur est sauvegardé et un token de confirmation est crée.
+     * Le mdp est crypté, l'utilisateur est sauvegardé et un token de confirmation est créé.
      * @param user
      * @return token de confirmation
      */

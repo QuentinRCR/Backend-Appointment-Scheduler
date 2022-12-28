@@ -20,16 +20,30 @@ public class ForgottenPasswordController {
     @Autowired
     ConfirmationTokenService confirmationTokenService;
 
+    /**
+     * Envoie un mail de réinitialisation de mot de passe à l'email fourni en paramètre
+     * @param email
+     * @return
+     */
     @PostMapping
     public String forgottenPassword(@RequestBody String email) {
         return forgottenPasswordService.reinitializePassword(email.replace("%40","@").substring(0,email.length()-3)); //to correct encoding errors
     }
 
+    /**
+     * Confirme que le lien de modification de mot de passe a été créé
+     * @param token
+     * @return
+     */
      @GetMapping(path="confirm")
     public String confirm(@RequestParam("token") String token){
         return forgottenPasswordService.confirmToken(token);
     }
 
+    /**
+     * Change le mot de passe de la personne faisant la requête pour le mot de passe fournie
+     * @param passwordReinitializationRequest
+     */
     @PostMapping("passwordReinitialisation")
     public void passwordReinitialization(@RequestBody PasswordReinitializationRequest passwordReinitializationRequest){
         (confirmationTokenRepository.findByToken(passwordReinitializationRequest.getToken())).get()

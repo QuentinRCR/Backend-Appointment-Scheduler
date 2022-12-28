@@ -6,7 +6,9 @@ import javax.persistence.*;
 import java.time.Duration;
 import java.time.LocalDateTime;
 
-
+/**
+ * Modèle définissant les attributs d'un Créneau
+ */
 @Entity
 public class Rendez_vous {
 

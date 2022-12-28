@@ -12,6 +12,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+/**
+ * Services liés au changement de mot de passe
+ */
 @Service
 public class ForgottenPasswordService {
 
@@ -20,7 +23,7 @@ public class ForgottenPasswordService {
 
     private final ConfirmationTokenService confirmationTokenService;
 
-    @Autowired
+    @Autowired //pour voir accès aux variables d'environnement
     private Environment environment;
 
     public ForgottenPasswordService(UserRepository userRepository, EmailService emailService, ConfirmationTokenService confirmationTokenService) {
@@ -29,13 +32,22 @@ public class ForgottenPasswordService {
         this.confirmationTokenService = confirmationTokenService;
     }
 
+    /**
+     * Envoie un mail de réinitialisation de mot de passe à l'email fourni en paramètre
+     * @param email
+     * @return
+     */
     public String reinitializePassword(String email){
+        //check that the user activated its account
         if(userRepository.findByEmail(email).isPresent() && (userRepository.findByEmail((email))).get().isEnabled()){
+
 
             String token = UUID.randomUUID().toString();
 
-
+            //create the link to the page to change the password
             String link=environment.getProperty("frontend.url")+"/formChangedPassword?token=" + token;
+
+            //create the token
             ConfirmationToken confirmationToken = new ConfirmationToken(
                     token,
                     LocalDateTime.now(),
@@ -44,6 +56,7 @@ public class ForgottenPasswordService {
 
             confirmationTokenService.saveConfirmationToken(confirmationToken);
 
+            //send email to the user
             emailService.sendEmail(email, "Lien de réinitialisation de votre mot de passe",
                     buildReinitializationEmail((userRepository.findByEmail((email))).get().getPrenom(), link));
 
@@ -57,6 +70,11 @@ public class ForgottenPasswordService {
 
     }
 
+    /**
+     * Confirme le token de modification de mot de passe
+     * @param token
+     * @return
+     */
     @Transactional
     public String confirmToken(String token) {
         ConfirmationToken confirmationToken = confirmationTokenService
@@ -64,6 +82,7 @@ public class ForgottenPasswordService {
                 .orElseThrow(() ->
                         new IllegalStateException("token not found"));
 
+        //check that the password was not already modified
         if (confirmationToken.getConfirmedAt() != null) {
             throw new IllegalStateException("password already modified");
 
@@ -71,6 +90,7 @@ public class ForgottenPasswordService {
 
         LocalDateTime expiredAt = confirmationToken.getExpiresAt();
 
+        //check that the token in not expired
         if (expiredAt.isBefore(LocalDateTime.now())) {
             throw new IllegalStateException("token expired");
         }
@@ -79,6 +99,12 @@ public class ForgottenPasswordService {
     }
 
 
+    /**
+     * Crée l'email de demande de modification de mot de passe
+     * @param name
+     * @param link
+     * @return L'email sous forme de String
+     */
     private String buildReinitializationEmail(String name, String link){
 
         return "<div style=\"font-family:Helvetica,Arial,sans-serif;font-size:16px;margin:0;color:#0b0c0c\">\n" +

@@ -14,9 +14,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.ByteArrayResource;
-import org.springframework.core.io.Resource;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.data.repository.query.Param;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -27,10 +25,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
-import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -47,13 +42,13 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
  * Met à disposition les apis pour gérer les Rendez-vous
  */
 @CrossOrigin
-@RestController // (1)
-@RequestMapping("/api/rendez_vous") // (2)
-@Transactional // (3)
+@RestController 
+@RequestMapping("/api/rendez_vous")
+@Transactional
 public class Rendez_vousController {
 
     @Autowired
-    private Environment environment;
+    private Environment environment; //to be able to use global environment variables  
 
     private final CreneauxDAO creneauxDAO;
     private final Rendez_vousDAO rendez_vousDAO;
@@ -71,50 +66,60 @@ public class Rendez_vousController {
     }
 
     /**
-     * Donne la liste de tous les rdvs
+     * Test l'authorité de la personne. Si la personne est admin, ça lui renvoie les 100 derniers rendez-vous, si la personne est un utilisateur, ça lui renvoie aussi les 100 derniers rendez-vous, mais anonymisés (à par pour les siens).
      *
-     * @return une liste de tous les rdvs
+     * @return une liste des 100 derniers rendez-vous
      */
     @GetMapping("/user")
     public List<Rendez_vousDTO> findAll(HttpServletRequest request) {
+        
+        //Get the authorisation 
         String authorizationHeader = request.getHeader(AUTHORIZATION);
         String acces_token = authorizationHeader.substring("Bearer ".length());
-        Algorithm algorithm = Algorithm.HMAC256("secret".getBytes()); //TODO check video around 17min-1:38h should crypt the token
+        Algorithm algorithm = Algorithm.HMAC256("secret".getBytes());
         JWTVerifier verifier = JWT.require(algorithm).build();
         DecodedJWT decodedJWT = verifier.verify(acces_token);
-        String auth = decodedJWT.getClaim("roles").asArray(String.class)[0];
+        String auth = decodedJWT.getClaim("roles").asArray(String.class)[0]; //extract the role from the header
 
+        //get all the appointments 
         List<Rendez_vous> rendez_vousList=rendez_vousDAO.findAll();
-        List<Rendez_vousDTO> aa= rendez_vousList.subList(0,Integer.min(100,rendez_vousList.size())).stream().map(Rendez_vousDTO::new).collect(Collectors.toList()); //the subList is to avoid adding loading time
-        if (auth.equals("USER")){ //anonymize the id user when a user call the api
-            aa.forEach(rdv -> {
-                if(rdv.getIdUser()!=Long.parseLong(decodedJWT.getKeyId())){ //if it is its own appointment when let the id
+        List<Rendez_vousDTO> rendez_vousListCourte= rendez_vousList.subList(0,Integer.min(100,rendez_vousList.size())).stream().map(Rendez_vousDTO::new).collect(Collectors.toList()); //the subList is to avoid adding loading time
+        
+        //if it is a USER, anonymize the appointements by removing the client id, except if it is its own appointment
+        if (auth.equals("USER")){
+            rendez_vousListCourte.forEach(rdv -> {
+                if(rdv.getIdUser()!=Long.parseLong(decodedJWT.getKeyId())){ //if it is its own appointment then let the id
                     rdv.setIdUser(null);
                 }
             });
         }
 
 
-        return  aa;
+        return  rendez_vousListCourte;
     }
 
     /**
      * Donne tous les rendez-vous si la personne est admin et donne seulement les rendez-vous de la personne si cette personne n'est pas admin
      * @param request
-     * @return
+     * @return liste de rendez-vous
      */
     @GetMapping("/user/auth")
     public List<Rendez_vousDTO> findAllByAuth(HttpServletRequest request){
+        //extract the role from the header
         String authorizationHeader = request.getHeader(AUTHORIZATION);
         String acces_token = authorizationHeader.substring("Bearer ".length());
         Algorithm algorithm = Algorithm.HMAC256("secret".getBytes()); //TODO check video around 17min-1:38h should crypt the token
         JWTVerifier verifier = JWT.require(algorithm).build();
         DecodedJWT decodedJWT = verifier.verify(acces_token);
-        String auth = decodedJWT.getClaim("roles").asArray(String.class)[0];
-        if (auth.equals("ADMIN")){ //if the right rights, send all the appointements
+        String auth = decodedJWT.getClaim("roles").asArray(String.class)[0]; //Get the authorisation
+
+        //if the right rights, send all the appointements
+        if (auth.equals("ADMIN")){
             List<Rendez_vous> rendez_vousList= rendez_vousDAO.findAll();
             return rendez_vousList.subList(0,Integer.min(100,rendez_vousList.size())).stream().map(Rendez_vousDTO::new).collect(Collectors.toList()); //the sublist is to avoid adding time to load old appointements
         }
+
+        //if it is a user, send only own appointements
         else{
             Long id = Long.parseLong(decodedJWT.getKeyId());
             return rendez_vousDAO.findAllByIdUser(id).stream().map(Rendez_vousDTO::new).collect(Collectors.toList());
@@ -122,7 +127,7 @@ public class Rendez_vousController {
     }
 
     /**
-     * Renvoi le rdv ayant pour id le paramètre
+     * Renvoi le rdv ayant pour id le paramètre (non inutilisé dans le front-end)
      *
      * @param id
      * @return rdv
@@ -130,8 +135,10 @@ public class Rendez_vousController {
     @GetMapping(path = "/admin/{id}")
     public Rendez_vousDTO findById(@PathVariable Long id) {
         Rendez_vousDTO rendez_vousId= rendez_vousDAO.findById(id).map(Rendez_vousDTO::new).orElse(null);
+
+        //If not found, throw 404 error
         if (rendez_vousId==null){
-            throw new ResponseStatusException( //If not found, throw 404 error
+            throw new ResponseStatusException(
                     HttpStatus.NOT_FOUND, "entity not found"
             );
         }
@@ -141,26 +148,31 @@ public class Rendez_vousController {
     }
 
     /**
-     * Renvoi tous les rendez-vous d'un client
+     * Renvoi tous les rendez-vous d'un client (non utilisé dans le front-end)
      * @param idUser
      * @return Renvoi la liste des rendez-vous d'un client
      */
-    @GetMapping(path = "/user/{idUser}")
+    @GetMapping(path = "/admin/{idUser}")
     public List<Rendez_vousDTO> findAllByClientId(@PathVariable Long idUser) {
         return rendez_vousDAO.findAllByIdUser(idUser).stream().map(Rendez_vousDTO::new).collect(Collectors.toList());
     }
 
 
     /**
-     * Supprime le créneau ayant pour id le paramètre
+     * Supprime le rendez-vous dont l'identifient est fourni et envoie un email aux admins pour les informer que ce rendez-vous a été supprimé
      * @param id
      */
     @DeleteMapping(path = "/user/{id}")
     public void deleteParId(@PathVariable Long id) {
         try{
-            User user=userRepository.findById(rendez_vousDAO.findById(id).get().getIdUser()).get();
+            //get infos on the appointment and the user before deleting it
             Rendez_vous deletedApp=rendez_vousDAO.findById(id).get();
+            User user=userRepository.findById(deletedApp.getIdUser()).get();
+
+            //delete the appointment
             rendez_vousDAO.deleteById(id);
+
+            //Email all the admins
             List <User> Admins= userRepository.findByRole(UserRole.ADMIN);
             for (int i=0; i<Admins.size(); i++) {
                 emailService.sendEmail(Admins.get(i).getEmail(),
@@ -173,6 +185,8 @@ public class Rendez_vousController {
                 );
             }
         }
+
+        //handle exceptions
         catch (EmptyResultDataAccessException e){
             throw new ResponseStatusException( //if not found, throw 404 error
                     HttpStatus.NOT_FOUND, "entity not found"
@@ -182,62 +196,94 @@ public class Rendez_vousController {
     }
 
     /**
-     * Prend un dto de rdv en paramètre, vérifie que ce rendez-vous rentre dans un créneau, crée ce rdv dans la db si son id est null et le modifie si son id existe déjà. L'id du créneau est mis à jour automatiquement
+     * Modifie ou ajoute un rendez-vous à la base de donnée. Des testes suivant sont réalisé :
+     * - Vérifie que le rendez-vous correspond à un créneau
+     * - Vérifie que le rendez-vous est dans le future.
+     * - Vérifie que le rendez-vous rentre en entière dans le créneau
+     * - Vérifie qu'il n'y a pas déjà un rendez-vous pour cette heure
+     * Si l'id du rendez-vous est précisé, ça modifier le rendez-vous dont l'id est spécifié. Si ce n'est pas le cas, ça crée un nouveau rendez-vous
+     * L'id de l'utilisateur est automatiquement assigné si un User fait la request. L'idée fournit est utilisé si un admin fait la request.
      *
      * @param dto
-     * @return le dto du rdv crée
+     * @return le rendez-vous crée ou modifié
      */
     @PostMapping("/user/create_or_modify") // (8)
     public Rendez_vousDTO create_or_modify(@RequestBody Rendez_vousDTO dto,HttpServletRequest request) {
-        CreneauxDTO creneauMatch = isWithinASlot(dto.getDateDebut(),dto.getDuree()); //Get the slot in which the appointment fit.
-        if (creneauMatch == null){ //If there is no corresponding slot, throw 404 error
+
+        //Get the slot in which the appointment fit.
+        CreneauxDTO creneauMatch = isWithinASlot(dto.getDateDebut(),dto.getDuree());
+
+        //If there is no corresponding slot, throw 404 error
+        if (creneauMatch == null){
             throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, "slot not found"
+                    HttpStatus.NOT_FOUND, "no slot corresponding to this time"
             );
         }
 
-        // Diferent case depending on the role of the personne
+        //If a slot is found, assign the value of the corresponding slot
+        Long creneauId = creneauMatch.getId();
+
+
+
+        // Get the role of the user in the header
         String acces_token = request.getHeader(AUTHORIZATION).substring("Bearer ".length());
         Algorithm algorithm = Algorithm.HMAC256("secret".getBytes());
         JWTVerifier verifier = JWT.require(algorithm).build();
         DecodedJWT decodedJWT = verifier.verify(acces_token);
         String auth = decodedJWT.getClaim("roles").asArray(String.class)[0];
-        if (auth.equals("USER")){ //if the person is a user, for the id to be his
+
+        //if the person is a user, the id used to book the appointment is his (regardless of what was previously set)
+        if (auth.equals("USER")){
             dto.setIdUser(Long.parseLong(decodedJWT.getKeyId()));
         }
-        //if it is not the case, it means that the ADMIN try to add an appointment for a user so we keen the id
+        //if it is not the case, it means that the ADMIN try to add an appointment for a user so we keep the id specified
 
-        Long creneauId = creneauMatch.getId(); //If a slot is found, assign the value of the corresponding slot
-        Rendez_vous rendez_vous = null;
-        // On creation id is not defined
 
+
+        //handle different errors
+
+        //test that the date and time of the appointment is in the future. If it is not the case, it means that the user mad a mistake.
         if( (dto.getDateDebut().isBefore(LocalDateTime.now()))){
             throw new ResponseStatusException(
-                    HttpStatus.FORBIDDEN, "outside time slots"
+                    HttpStatus.FORBIDDEN, "can't take an appointment in the past"
             );
         }
 
-        if( //check appointment is the time slot
+        //check that the appointment fits within the matching time slot
+        if(
                 (dto.getDateDebut().toLocalTime().isBefore(creneauMatch.getHeuresDebutFin().get(0).getTempsDebut())) ||
                         (dto.getDateDebut().toLocalTime().plus(Duration.ofMinutes(30)).isAfter(creneauMatch.getHeuresDebutFin().get(0).getTempsFin()))
         ){
             throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST, "outside time slots"
+                    HttpStatus.BAD_REQUEST, "the appointment does not fit within the timeslot"
             );
         }
-        if(rendez_vousDAO.findByDateDebut(dto.getDateDebut()).size()>0){ //detect if there already are an appointment at this time
+
+        //detect if there already are an appointment at this time
+        if(rendez_vousDAO.findByDateDebut(dto.getDateDebut()).size()>0){ //check no appointements are at the same time
             throw new ResponseStatusException(
                     HttpStatus.CONFLICT, "already an appointment at this time"
             );
         }
+
+
+
+        Rendez_vous rendez_vous = null;
+
+        // If the id is not defined, it means we are in creation mode
         if (dto.getId() == null) {
-            rendez_vous = rendez_vousDAO.save(new Rendez_vous(dto.getId(), creneauId ,dto.getIdUser(), dto.getDateDebut(), dto.getDuree(), dto.getMoyenCommunication(),dto.getZoomLink())); //Create new appointment
-            //envoi mail de confirmation prise de rdv
+
+            //Create new appointment
+            rendez_vous = rendez_vousDAO.save(new Rendez_vous(dto.getId(), creneauId ,dto.getIdUser(), dto.getDateDebut(), dto.getDuree(), dto.getMoyenCommunication(),dto.getZoomLink()));
+
+            //send confirmation email to the user
             User user= userRepository.findById(dto.getIdUser()).get();
-            emailService.sendEmail(             // Pour l'élève
+            emailService.sendEmail(
                     user.getEmail(),
                     "Confirmation prise de rendez-vous",
                     buildEmailConfirmationRdv(user.getPrenom(), environment.getProperty("frontend.url"), dto.getDateDebut(),dto.getMoyenCommunication()));
+
+            //if the appointment is not made by an admin, email all admins to inform them of a new appointment
             if (auth.equals("USER")) {
                 List<User> Admins = userRepository.findByRole(UserRole.ADMIN);
                 for (int i = 0; i < Admins.size(); i++) {
@@ -250,53 +296,62 @@ public class Rendez_vousController {
 
 
 
+        // If the id is defined, it means we are in modification mode
         } else {
-            rendez_vous = rendez_vousDAO.getReferenceById(dto.getId());  //Modify existing appointment
+            //Get and modify existing appointment
+            rendez_vous = rendez_vousDAO.getReferenceById(dto.getId());
             LocalDateTime ancienDateRdv= rendez_vous.getDateDebut();
             rendez_vous.setDateDebut(dto.getDateDebut());
             rendez_vous.setIdCreneau(creneauId);
             rendez_vous.setIdUser(dto.getIdUser());
-            rendez_vous.setDuree(dto.getDuree()); /*use a duration using format "PT60S" or "PT2M"...*/
+            rendez_vous.setDuree(dto.getDuree()); //use a duration using format "PT60S" or "PT2M"... (for 60 seconds and 2 minutes)
             rendez_vous.setMoyenCommunication(dto.getMoyenCommunication());
             rendez_vous.setZoomLink(dto.getZoomLink());
 
-            //envoi mail de modification de rdv
+            //Informe the user that the appointment as been has been moved
             User user= userRepository.findById(dto.getIdUser()).get();
-            emailService.sendEmail(             // Pour l'élève
+            emailService.sendEmail(
                     user.getEmail(),
                     "Modification de rendez-vous",
                     buildEmailModificationRdv(user.getPrenom(), environment.getProperty("frontend.url"), dto.getDateDebut(),dto.getMoyenCommunication()));
+
+            //If the appointment is modified by a user, email the admin
             if (auth.equals("USER")) {
                 List<User> Admins = userRepository.findByRole(UserRole.ADMIN);
                 for (int i = 0; i < Admins.size(); i++) {
-                    emailService.sendEmail( Admins.get(i).getEmail(),            // Pour la psy
+                    emailService.sendEmail( Admins.get(i).getEmail(),
                             "Un rendez-vous a été modifié",
                             buildEmailModificationRdvPsy(user.getNom(), user.getPrenom(),ancienDateRdv, dto.getDateDebut(), dto.getMoyenCommunication(), "linkSite"));
                 }
             }
 
         }
+
+        //return the appointment that was juste created
         return new Rendez_vousDTO(rendez_vous);
     }
 
 
     /**
-     * Crée le document Excel avec les rendez-vous et le rend disponible au téléchargement
-     * @param startDate
-     * @param endDate
+     * Crée le document Excel contenant les rendez-vous entre la date de début et la date de fin puis rend disponible ce fichier au téléchargement
+     * @param startDate date début
+     * @param endDate date fin
      * @return
      * @throws IOException
      */
     @GetMapping("/downloadFile/{startDate}/{endDate}")
     public ResponseEntity<?> downloadFile(@PathVariable("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate, @PathVariable("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) throws IOException {
-            String absolutePath= Export_excel.exportAppointements(rendez_vousDAO,userRepository,startDate,endDate); //export appointements to excel
+            //export appointements to excel
+            String absolutePath= Export_excel.exportAppointements(rendez_vousDAO,userRepository,startDate,endDate);
 
             // transform the path to a ressource
             Path path = Paths.get(absolutePath);
             ByteArrayResource resource = new ByteArrayResource(Files.readAllBytes(path));
 
+            //send the document
             String contentType = "application/octet-stream";
-            String headerValue = "attachment; filename=RecapRDVDu"+startDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))+"Au"+startDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))+".xlsx"; //explains the name for the file
+            //set the name for the file
+            String headerValue = "attachment; filename=RecapRDVDu"+startDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))+"Au"+startDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))+".xlsx";
             return ResponseEntity.ok()
                             .contentType(MediaType.APPLICATION_OCTET_STREAM)
                             .header(HttpHeaders.CONTENT_DISPOSITION, headerValue)
@@ -306,7 +361,7 @@ public class Rendez_vousController {
 
 
     /**
-     * Cherche si un créneau se terminant dans le futur permet de contenir ce rendez-vous
+     * Cherche si un créneau correspond à la date à la durée indiquée correspond. Ne cherche que les créneaux se situant dans le futur.
      * @param dateDebutRDV
      * @param duree
      * @return L'id du créneau correspondant et null s'il n'y a pas de créneau correspondant
@@ -316,7 +371,7 @@ public class Rendez_vousController {
     }
 
     /**
-     * Cherche si un créneau se terminant après dateDebutRecherche permet de contenir ce rendez-vous
+     * Cherche si un créneau correspond à la date à la durée indiquée correspond. Ne cherche que les créneaux se situant après la date indiquée.
      * @param dateDebutRDV
      * @param duree
      * @param dateDebutRecherche
@@ -325,15 +380,21 @@ public class Rendez_vousController {
     public CreneauxDTO isWithinASlot(LocalDateTime dateDebutRDV, Duration duree, LocalDate dateDebutRecherche){
         logger.info( "un créneau pour un rendez-vous le "+dateDebutRDV.toString()+" d'une durée de "+duree.toString()+ "après la date de "+dateDebutRecherche.toString()+" a été cherché");
 
-        LocalDateTime dateFinRDV= dateDebutRDV.plus(duree); //Create a time of the end of the appointment
+        //Create a time of the end of the appointment
+        LocalDateTime dateFinRDV= dateDebutRDV.plus(duree);
 
         CreneauxDTO bonCreneau=null;
         for (Creneaux creneau : creneauxDAO.findCreneauxAfterDate(dateDebutRecherche)){ //Get all slots ending after the given date
             if (
-                    (creneau.getJours().contains(dateDebutRDV.getDayOfWeek())) && //check that the day match one of the registered days
-                            ((dateDebutRDV.toLocalDate().isAfter(creneau.getDateDebut())) || (dateDebutRDV.toLocalDate().equals(creneau.getDateDebut()))) && //Check that the stating date in within the slot
-                            ((dateFinRDV.toLocalDate().isBefore(creneau.getDateFin())) || (dateDebutRDV.toLocalDate().equals(creneau.getDateFin()))) //Check that the ending date in within the slot
+                //check that the day match one of the registered days
+                (creneau.getJours().contains(dateDebutRDV.getDayOfWeek())) &&
+                //Check that the stating date in within the slot
+                ((dateDebutRDV.toLocalDate().isAfter(creneau.getDateDebut())) || (dateDebutRDV.toLocalDate().equals(creneau.getDateDebut()))) &&
+                //Check that the ending date in within the slot
+                ((dateFinRDV.toLocalDate().isBefore(creneau.getDateFin())) || (dateDebutRDV.toLocalDate().equals(creneau.getDateFin())))
             ){
+
+                //check that the appointment time is withing the timeslots of the slot.
                 for (HeuresDebutFin plage:creneau.getHeuresDebutFin()){
                     if (
                             ((dateDebutRDV.toLocalTime().isAfter(plage.getTempsDebut())) || (dateDebutRDV.toLocalTime().equals(plage.getTempsDebut()))) && //Check that the stating time is within a time-slot
@@ -353,7 +414,14 @@ public class Rendez_vousController {
         return bonCreneau;
     }
 
-    /*Crée le mail qu'on envoie lors de la prise d'un rdv, mail adapté à l'user et au rdv en question*/
+    /**
+     * Crée un mail personalisé pour confirmer la prise de rendez-vous auprès d'un client
+     * @param name
+     * @param link
+     * @param date
+     * @param comm
+     * @return Le mail sous forme de String
+     */
     public String buildEmailConfirmationRdv(String name, String link, LocalDateTime date, String comm) {
         //SimpleDateFormat dateFormat = new SimpleDateFormat("EEEEEEEE dd MMMMMMMMM yyyy", Locale.FRANCE);
         return "<!doctype html>\n" +
@@ -594,7 +662,14 @@ public class Rendez_vousController {
                 "</html>";
     }
 
-    /*Crée le mail qu'on envoie lors de la modification d'un rdv existant, mail adapté à l'user et au rdv en question*/
+    /**
+     * Crée un mail personalisé pour confirmer la modification d'un rendez-vous auprès d'un client
+     * @param name
+     * @param link
+     * @param date
+     * @param comm
+     * @return Le mail sous forme de String
+     */
     public String buildEmailModificationRdv(String name, String link, LocalDateTime date, String comm) {
         //SimpleDateFormat dateFormat = new SimpleDateFormat("EEEEEEEE dd MMMMMMMMM yyyy", Locale.FRANCE);
         return "<!doctype html>\n" +
@@ -835,7 +910,14 @@ public class Rendez_vousController {
                 "</html>";
     }
 
-    /*Crée le mail qu'on envoie lors de l'annulation d'un rdv existant, mail adapté à l'user et au rdv en question*/
+    /**
+     * Crée un mail personalisé pour confirmer la suppression de rendez-vous auprès d'un client
+     * @param name
+     * @param link
+     * @param date
+     * @param comm
+     * @return Le mail sous forme de String
+     */
     public String buildEmailAnnulationRdv(String name, String link, LocalDateTime date, String comm) {
         //SimpleDateFormat dateFormat = new SimpleDateFormat("EEEEEEEE dd MMMMMMMMM yyyy", Locale.FRANCE);
         return "<!doctype html>\n" +
@@ -1075,6 +1157,15 @@ public class Rendez_vousController {
                 "</html>";
     }
 
+    /**
+     * Crée un mail personalisé pour confirmer aux admins la prise de rendez-vous d'un client
+     * @param name
+     * @param firstname
+     * @param date
+     * @param comm
+     * @param link
+     * @return Le mail sous forme de String
+     */
     public String buildEmailConfirmationRdvPsy(String name, String firstname, LocalDateTime date, String comm, String link ){
         //SimpleDateFormat dateFormat = new SimpleDateFormat("EEEEEEEE dd MMMMMMMMM yyyy", Locale.FRANCE);
         return "<!doctype html>\n" +
@@ -1316,6 +1407,17 @@ public class Rendez_vousController {
                 "</html>";
     }
 
+
+    /**
+     * Crée un mail personalisé pour confirmer aux admins la modification du rendez-vous d'un client
+     * @param name
+     * @param firstname
+     * @param ancienneDate
+     * @param date
+     * @param comm
+     * @param link
+     * @return Le mail sous forme de String
+     */
     public String buildEmailModificationRdvPsy(String name, String firstname, LocalDateTime ancienneDate, LocalDateTime date, String comm, String link ){
         //SimpleDateFormat dateFormat = new SimpleDateFormat("EEEEEEEE dd MMMMMMMMM yyyy", Locale.FRANCE);
         return "<!doctype html>\n" +
@@ -1557,6 +1659,15 @@ public class Rendez_vousController {
                 "</html>";
     }
 
+    /**
+     * Crée un mail personalisé pour confirmer la suppression d'un rendez-vous auprès des admins
+     * @param name
+     * @param firstname
+     * @param date
+     * @param comm
+     * @param link
+     * @return Le mail sous forme de String
+     */
     public String buildEmailSuppressionPsy(String name, String firstname, LocalDateTime date, String comm, String link ){
         //SimpleDateFormat dateFormat = new SimpleDateFormat("EEEEEEEE dd MMMMMMMMM yyyy", Locale.FRANCE);
         return "<!doctype html>\n" +

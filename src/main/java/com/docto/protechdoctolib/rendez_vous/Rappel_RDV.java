@@ -30,7 +30,7 @@ public class Rappel_RDV {
     /**
      * Envoie un mail de rappel de rendez-vous tous les jours à 12h pour les rendez-vous de la journée d'après
      */
-    @Scheduled(cron = "00 00 12 ? * * ")// Tous les jours à 12h
+    @Scheduled(cron = "00 00 12 ? * * ")// Every day at noon
     public void rappel(){
         //get the appointements after the current date
         List<Rendez_vous> list_RDV = rendez_vousDAO.findRendez_vousAfterDate(LocalDateTime.now());
