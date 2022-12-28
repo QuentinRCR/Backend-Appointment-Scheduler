@@ -10,6 +10,9 @@ import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * Permet de lier la base de donnée à la representation dans java de l'objet Rendez-vous
+ */
 public interface Rendez_vousDAO extends JpaRepository<Rendez_vous, Long> {
 
     /**

@@ -43,6 +43,9 @@ import java.util.stream.Collectors;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
+/**
+ * Met à disposition les apis pour gérer les Rendez-vous
+ */
 @CrossOrigin
 @RestController // (1)
 @RequestMapping("/api/rendez_vous") // (2)
@@ -286,7 +289,7 @@ public class Rendez_vousController {
      */
     @GetMapping("/downloadFile/{startDate}/{endDate}")
     public ResponseEntity<?> downloadFile(@PathVariable("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate, @PathVariable("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) throws IOException {
-            String absolutePath= Export_excel.export(rendez_vousDAO,userRepository,startDate,endDate); //export appointements to excel
+            String absolutePath= Export_excel.exportAppointements(rendez_vousDAO,userRepository,startDate,endDate); //export appointements to excel
 
             // transform the path to a ressource
             Path path = Paths.get(absolutePath);

@@ -15,6 +15,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Met à disposition les apis pour gérer les CommunicationMeans
+ */
 @CrossOrigin //to allow cross-origin request from the vue application to the backend (hosted on the same computer)
 @RestController
 @RequestMapping("/api/communicationMean")
@@ -27,21 +30,32 @@ public class CommunicationMeanController {
         this.communicationMeanDAO = communicationMeanDAO;
     }
 
+    /**
+     * Permet de renvoyer tous les moyens de communication qu'il y a dans la base de données
+     * @return
+     */
     @GetMapping(path = "/user")
     public List<CommunicationMeanDTO> findAll() {
         List<CommunicationMeans> aa = communicationMeanDAO.findAll();
         return aa.stream().map(CommunicationMeanDTO::new).collect(Collectors.toList());
     }
 
+    /**
+     * Supprime tous les moyens de communications qu'il y a dans la base de données
+     */
     @DeleteMapping(path = "/admin/")
     public void deleteAll() {
         communicationMeanDAO.deleteAll();
     }
 
-    @PostMapping("/admin/create_or_modify") // (8)
-    public CommunicationMeanDTO create_or_modify(@RequestBody CommunicationMeanDTO dto) {
-        CommunicationMeans communicationMeans;
-        communicationMeans = communicationMeanDAO.save(new CommunicationMeans(dto.getCommunicationMean())); //Create new slot
+    /**
+     * Ajoute un nouveau moyen de communication à la liste
+     * @param dto
+     * @return Le moyen de communication qui vient d'être créé
+     */
+    @PostMapping("/admin/create") // (8)
+    public CommunicationMeanDTO create(@RequestBody CommunicationMeanDTO dto) {
+        CommunicationMeans communicationMeans = communicationMeanDAO.save(new CommunicationMeans(dto.getCommunicationMean())); //Create new slot
         return new CommunicationMeanDTO(communicationMeans);
     }
 }

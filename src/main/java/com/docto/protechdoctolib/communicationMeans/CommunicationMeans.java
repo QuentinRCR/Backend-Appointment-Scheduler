@@ -9,6 +9,9 @@ import javax.persistence.Id;
 @Entity
 public class CommunicationMeans {
 
+    /**
+     * String définissant un moyen de communication et servant d'identifiant
+     */
     @Id
     private String communicationMean;
 

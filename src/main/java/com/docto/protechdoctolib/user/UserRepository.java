@@ -13,6 +13,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Permet de lier la base de donnée à la representation dans java de l'objet User
+ */
 @Qualifier("users")
 @Repository
 @Transactional(readOnly=true)

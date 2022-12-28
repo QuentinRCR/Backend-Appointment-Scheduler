@@ -6,10 +6,13 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
+/**
+ * Permet de lier la base de donnée à la representation dans java de l'objet HeureDebutFin
+ */
 public interface HeuresDebutFinDAO extends JpaRepository<HeuresDebutFin, Long> {
 
     /**
-     * Permet de récupérer toutes les plages de temps qui appartiennent à un créneau
+     * Renvoi toutes les plages de temps qui appartiennent à un créneau
      * @param idCreneaux
      * @return Liste des plages de temps qui appartiennent à un créneau
      */

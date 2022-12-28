@@ -23,6 +23,9 @@ import java.util.stream.Collectors;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
+/**
+ * Met à disposition les apis pour gérer les Users
+ */
 @CrossOrigin //to allow cross-origin request from the vue application to the backend (hosted on the same computer)
 @RestController
 @RequestMapping("/api/users")

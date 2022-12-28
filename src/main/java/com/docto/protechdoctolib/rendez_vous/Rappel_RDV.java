@@ -11,6 +11,9 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * Gère l'envoie des rappels de rendez-vous
+ */
 @Configuration
 @EnableScheduling
 public class Rappel_RDV {
@@ -24,10 +27,15 @@ public class Rappel_RDV {
         this.emailService = emailService;
     }
 
+    /**
+     * Envoie un mail de rappel de rendez-vous tous les jours à 12h pour les rendez-vous de la journée d'après
+     */
     @Scheduled(cron = "00 00 12 ? * * ")// Tous les jours à 12h
     public void rappel(){
+        //get the appointements after the current date
         List<Rendez_vous> list_RDV = rendez_vousDAO.findRendez_vousAfterDate(LocalDateTime.now());
-        //list_RDV.forEach(rdv -> {
+
+        //for each appointements found, send a remainder of the appointment is in the next day
         for (int i=0; i< list_RDV.size(); i++){
             if((list_RDV.get(i).getDateDebut().isAfter(LocalDateTime.now().plus(Duration.ofHours(12)))) && (list_RDV.get(i).getDateDebut().isBefore(LocalDateTime.now().plus(Duration.ofHours(36))))){
                 User user = userRepository.findById(list_RDV.get(i).getIdUser()).get();
@@ -36,6 +44,15 @@ public class Rappel_RDV {
             }
         };
     }
+
+    /**
+     * Construit le mail de rappel de rendez-vous
+     * @param name Prénom de l'élève
+     * @param link lien zoom (non implémenté dans le mail)
+     * @param date Date tu rendez-vous
+     * @param comm Moyen de communication utilisé
+     * @return le mail de rappel
+     */
     public String buildEmailRappelRdv(String name, String link, LocalDateTime date, String comm) {
         //SimpleDateFormat dateFormat = new SimpleDateFormat("EEEEEEEE dd MMMMMMMMM yyyy", Locale.FRANCE);
         return "<!doctype html>\n" +

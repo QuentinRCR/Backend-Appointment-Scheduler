@@ -37,10 +37,16 @@ public class HeuresDebutFin {
      */
     private  Long idCreneaux;
 
+    /**
+     * Heure de debut de la plage de temps
+     */
     @Column
     @DateTimeFormat(pattern = "dd.MM.yyyy HH:mm:ss[.SSS][.SS][.S]")
     private LocalTime tempsDebut;
 
+    /**
+     * Heure de fin de la plage de temps
+     */
     @Column
     @DateTimeFormat(pattern = "dd.MM.yyyy HH:mm:ss[.SSS][.SS][.S]")
     private LocalTime tempsFin;

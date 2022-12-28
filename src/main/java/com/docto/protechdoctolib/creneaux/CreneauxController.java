@@ -19,6 +19,9 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.stream.Collectors;
 
+/**
+ * Met à disposition les apis pour gérer les Créneaux
+ */
 @CrossOrigin //to allow cross-origin request from the vue application to the backend (hosted on the same computer)
 @RestController
 @RequestMapping("/api/creneaux")
@@ -98,7 +101,7 @@ public class CreneauxController {
 
 
     /**
-     * Prend un dto de créneau en paramètre, crée ce créneau dans la db si son id est null et le modifie si son id existe déjà
+     * Crée ce créneau dans la base de données si l'id du dto est null et le modifie si son id existe déjà
      *
      * @param dto
      * @return le dto du créneau crée
