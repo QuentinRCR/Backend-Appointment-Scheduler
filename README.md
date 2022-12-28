@@ -1,4 +1,4 @@
-# Protech Doctolib
+# Backend Protech Doctolib
 
 
 ## Description
@@ -24,6 +24,7 @@ This project is the backend of an appointment scheduler. It deploys a REST API (
 - A user manager API that allows to **modify**/**delete**/**find by id**/**find all** clients and a controllers to handle forgot passwords.
 - A registration manager API that allows to create a user and activate the account when the confirmation link is clicked.
 - An email sender to send confirmations and reminders emails to users and information emails to admins.
+- An Excel exporter to export the appointments between two dates in an Excel documents.
 
 This project has different access rights that allow users to access only some API. Admins have access to all apis but users have some restrictions. For instance, users are unable to access data of other users.
 
