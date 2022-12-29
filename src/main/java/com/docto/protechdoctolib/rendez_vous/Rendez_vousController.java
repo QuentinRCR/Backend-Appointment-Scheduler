@@ -339,7 +339,7 @@ public class Rendez_vousController {
      * @return
      * @throws IOException
      */
-    @GetMapping("/downloadFile/{startDate}/{endDate}")
+    @GetMapping("/admin/downloadFile/{startDate}/{endDate}")
     public ResponseEntity<?> downloadFile(@PathVariable("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate, @PathVariable("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) throws IOException {
             //export appointements to excel
             String absolutePath= Export_excel.exportAppointements(rendez_vousDAO,userRepository,startDate,endDate);
