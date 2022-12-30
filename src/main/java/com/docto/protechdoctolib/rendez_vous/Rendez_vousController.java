@@ -260,7 +260,8 @@ public class Rendez_vousController {
         }
 
         //detect if there already are an appointment at this time
-        if(rendez_vousDAO.findByDateDebut(dto.getDateDebut()).size()>0){ //check no appointements are at the same time
+        List<Rendez_vous> rendez_vousAtTime= rendez_vousDAO.findByDateDebut(dto.getDateDebut());
+        if(rendez_vousAtTime.size()>0 && !rendez_vousAtTime.get(0).getId().equals(dto.getId())){ //check no appointements are at the same time except if it is the same appointment trying to be changed
             throw new ResponseStatusException(
                     HttpStatus.CONFLICT, "already an appointment at this time"
             );
@@ -340,7 +341,7 @@ public class Rendez_vousController {
      * @throws IOException
      */
     @GetMapping("/admin/downloadFile/{startDate}/{endDate}")
-    public ResponseEntity<?> downloadFile(@PathVariable("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate, @PathVariable("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) throws IOException {
+    public ResponseEntity<?> downloadFile(@PathVariable("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate, @PathVariable("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,HttpServletRequest request) throws IOException {
             //export appointements to excel
             String absolutePath= Export_excel.exportAppointements(rendez_vousDAO,userRepository,startDate,endDate);
 
