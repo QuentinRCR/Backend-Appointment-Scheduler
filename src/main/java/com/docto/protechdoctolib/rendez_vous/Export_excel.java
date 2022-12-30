@@ -82,10 +82,10 @@ public class Export_excel {
             cell.setCellValue(Date.from(rdv_list.get(i).getDateDebut().atZone(ZoneId.systemDefault()).toInstant()));//set the time as timestamp for Excel to understand
             cell.setCellStyle(cellStyle);
             cell= dataRow.createCell(3);
-            cell.setCellValue(currentUser.getNom()+" "+currentUser.getPrenom()); //Set client infos
+            cell.setCellValue("EMSE"); //Set client infos
             cell.setCellStyle(cellStyle3);
             cell=dataRow.createCell(4);
-            cell.setCellValue("EMSE");
+            cell.setCellValue(currentUser.getNom()+" "+currentUser.getPrenom()+" - "+rdv_list.get(i).getMoyenCommunication());
             cell.setCellStyle(cellStyle3);
         }
 
