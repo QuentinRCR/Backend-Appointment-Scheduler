@@ -29,7 +29,7 @@ public class CleaningService {
         this.rendez_vousDAO = rendez_vousDAO;
     }
 
-    // Une fois par mois, cette fonction s'active pour supprimer les comptes et les rdv et tokens associés qui sont vieux de plus de 5ans
+    // Une fois par mois, cette fonction s'active pour supprimer les comptes, et les rdv et tokens associés, qui sont vieux de plus de 5ans
     @Scheduled(cron = "0 55 10 13 * ?")// Tous les 13 du mois à 10:55 am
     public void cleanDatabase(){
         List<ConfirmationToken> tokensToDelete = cleanRepository.findTokensToDelete(LocalDateTime.now().minus(Duration.ofDays(1825))); //1825 jours = 5ans

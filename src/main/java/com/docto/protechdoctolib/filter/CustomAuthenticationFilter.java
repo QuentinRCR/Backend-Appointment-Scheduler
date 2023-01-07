@@ -25,6 +25,7 @@ import java.util.stream.Collectors;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
+/** Permet de créer un JWT à la connexion d'un utilisateur ou de rafraichir ce token lorsqu'il navigue sur le site */
 @Slf4j
 public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     private final AuthenticationManager authenticationManager;

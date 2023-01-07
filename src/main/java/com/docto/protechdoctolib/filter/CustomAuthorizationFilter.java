@@ -27,6 +27,7 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
+/** Permet de vérifier les autorisations d'un utilisateur contenus dans son JWT lorsqu'il qui navigue sur le site */
 @Slf4j
 public class CustomAuthorizationFilter extends OncePerRequestFilter {
 
