@@ -15,6 +15,7 @@ public class ConfirmationTokenService {
         this.confirmationTokenRepository = confirmationTokenRepository;
     }
 
+    /** Sauvegarde le token dans la databse */
     public void saveConfirmationToken(ConfirmationToken token){
         confirmationTokenRepository.save(token);
     }
@@ -24,6 +25,7 @@ public class ConfirmationTokenService {
         return confirmationTokenRepository.findByToken(token);
     }
 
+    /** Entre la date de confirmation du token dans la databse */
     public int setConfirmedAt(String token) {
         return confirmationTokenRepository.updateConfirmedAt(
                 token, LocalDateTime.now());

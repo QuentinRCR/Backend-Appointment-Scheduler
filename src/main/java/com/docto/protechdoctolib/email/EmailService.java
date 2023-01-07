@@ -23,6 +23,7 @@ public class EmailService {
         this.mailSender = mailSender;
     }
 
+    // Permet d'envoyer des mails via les servers gmail. Prend an arguments le destinataire, le sujet et le contenu du mail.
     @Async()
      public void sendEmail(String to, String subject, String text){
         Properties props;

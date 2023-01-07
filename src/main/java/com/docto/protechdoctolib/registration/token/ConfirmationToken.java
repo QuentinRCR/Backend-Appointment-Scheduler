@@ -5,6 +5,8 @@ import com.docto.protechdoctolib.user.User;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
+/** Défini un token utilisé pour vérifier l'identité de l'utilisateur lors de l'activation du compté à l'inscription et lors
+ d'une demande de réinitialisation de mdp */
 @Entity
 public class ConfirmationToken {
 

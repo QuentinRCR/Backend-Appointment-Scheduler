@@ -1,6 +1,6 @@
 package com.docto.protechdoctolib.registration;
 
-
+/** Données à saisir par l'utilisateur lors de l'inscription */
 public class RegistrationRequest {
     private final String nom;
     private final String prenom;
